@@ -233,6 +233,39 @@
       background: var(--honey-wash);
       color: inherit;
     }
+    /* Speaker buttons: hear the example word. Hidden where the browser can't speak. */
+    .letter {
+      position: relative;
+    }
+    .say {
+      position: absolute;
+      top: .45rem;
+      right: .45rem;
+      display: grid;
+      place-items: center;
+      width: 2.1rem;
+      height: 2.1rem;
+      min-height: 0;
+      padding: 0;
+      border-radius: 50%;
+    }
+    .practice .say {
+      position: static;
+      display: inline-grid;
+      vertical-align: middle;
+      margin-left: .4rem;
+    }
+    .no-speech .say {
+      display: none;
+    }
+    @media (pointer: coarse) {
+      .say {
+        width: 2.75rem;
+        height: 2.75rem;
+        top: .2rem;
+        right: .2rem;
+      }
+    }
     #choice-note {
       max-width: 38rem;
       margin: .25rem 0 0;
@@ -495,7 +528,8 @@
         <h2 id="letters">The letters</h2>
         <p
           class="lede">Each letter makes the sound marked in its example word, every time. A capital is the same shape drawn larger.
-      Under each word is how it is spelled in the style chosen above.</p>
+      Under each word is how it is spelled in the style chosen above.
+      Press a speaker to hear the word.</p>
 
         <h3>Long vowels</h3>
         <div class="group"

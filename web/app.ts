@@ -30,6 +30,30 @@ const mark = (word: string, part: string) => {
   const i = word.indexOf(part);
   return `${word.slice(0, i)}<b>${part}</b>${word.slice(i + part.length)}`;
 };
+// A speaker button that reads `word` aloud with the browser's own voice.
+// ponytail: it says the example word, not the bare sound; speech synthesis
+// can't be trusted to pronounce a lone vowel.
+const speaker = (word: string) =>
+  `<button type="button" class="say" data-say="${word}" aria-label="Hear the word ${word}">
+    <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor"/><path d="M16.5 8.5a5 5 0 0 1 0 7"/><path d="M19 6a8.5 8.5 0 0 1 0 12"/>
+    </svg>
+  </button>`;
+if ("speechSynthesis" in globalThis) {
+  document.addEventListener("click", (e) => {
+    const word = (e.target as Element).closest<HTMLElement>(".say")?.dataset
+      .say;
+    if (!word) return;
+    const utterance = new SpeechSynthesisUtterance(word);
+    utterance.lang = "en-US";
+    utterance.rate = 0.85;
+    speechSynthesis.cancel(); // don't queue behind an earlier press
+    speechSynthesis.speak(utterance);
+  });
+} else {
+  document.documentElement.classList.add("no-speech");
+}
+
 const tile = (spec: string) => {
   const [glyph, word, part, absentIn] = spec.split("|");
   return `<div class="letter" data-word="${word}" ${
@@ -41,6 +65,7 @@ const tile = (spec: string) => {
     <div class="word">${mark(word, part)}</div>
     <div class="spelled" lang="en-Dsrt"></div>
     <div class="absent">not used in ${absentIn}</div>
+    ${speaker(word)}
   </div>`;
 };
 for (const el of document.querySelectorAll<HTMLElement>("[data-letters]")) {
@@ -55,7 +80,9 @@ for (const el of document.querySelectorAll<HTMLElement>("[data-pairs]")) {
 const practice = $(".practice");
 practice.innerHTML = practice.dataset.words!.split("|")
   .map((w) =>
-    `<li><details><summary lang="en-Dsrt" data-word="${w}">…</summary><p>${w}</p></details></li>`
+    `<li><details><summary lang="en-Dsrt" data-word="${w}">…</summary><p>${w} ${
+      speaker(w)
+    }</p></details></li>`
   ).join("");
 
 // The dictionary is one 3.6 MB text file; everything waits on it.
