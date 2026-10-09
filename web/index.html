@@ -1,0 +1,540 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>The Deseret Alphabet</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+Deseret&family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&display=swap">
+    <style>
+    /* Salt-flat paper, blue-black ink, honey for anything you can press
+       ("Deseret" is the Book of Mormon word for honeybee). */
+    :root {
+      --salt: #e8eeec;
+      --sheet: #f8faf9;
+      --ink: #1c2742;
+      --sage: #5f7566;
+      --rule: #b9c6c0;
+      --honey: #c58a17;
+      --honey-wash: #f6e6bf;
+      --latin: "Old Standard TT", "Iowan Old Style", Georgia, serif;
+      --deseret: "Noto Sans Deseret", "Apple Symbols", "Segoe UI Historic", sans-serif;
+    }
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      background: var(--salt);
+      color: var(--ink);
+      font: 1.125rem/1.6 var(--latin);
+    }
+    main {
+      max-width: 66rem;
+      margin: 0 auto;
+      padding: 0 1.25rem 5rem;
+    }
+    .d {
+      font-family: var(--deseret);
+    }
+    :focus-visible {
+      outline: 3px solid var(--honey);
+      outline-offset: 2px;
+    }
+    textarea:focus-visible {
+      outline-offset: -3px;
+    } /* stay inside the box rules */
+
+    /* Masthead: the name in its own letters is the picture. */
+    header {
+      padding: 3.5rem 0 2rem;
+    }
+    h1 {
+      margin: 0;
+      font-weight: 400;
+      line-height: 1.1;
+    }
+    h1 .d {
+      display: block;
+      font-size: clamp(2.2rem, 7.5vw, 5.2rem);
+      letter-spacing: .01em;
+    }
+    h1 .said {
+      display: block;
+      margin-top: .6rem;
+      font-size: 1.35rem;
+      font-style: italic;
+      color: var(--sage);
+    }
+    header p {
+      max-width: 38rem;
+      margin: 1.25rem 0 0;
+    }
+
+    h2 {
+      font-size: 1.9rem;
+      font-weight: 400;
+      line-height: 1.2;
+      margin: 4rem 0 .5rem;
+    }
+    h3 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin: 2.25rem 0 .25rem;
+    }
+    .lede {
+      max-width: 38rem;
+      margin: 0 0 1.25rem;
+    }
+
+    /* Style switch */
+    fieldset {
+      border: 0;
+      padding: 0;
+      margin: 0;
+    }
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+    }
+    .styles {
+      display: inline-flex;
+      border: 1.5px solid var(--ink);
+      border-radius: 2rem;
+      overflow: hidden;
+      background: var(--sheet);
+      font-style: normal;
+      color: var(--ink);
+      font-size: 1rem;
+      margin-left: auto;
+    }
+    .styles label {
+      cursor: pointer;
+    }
+    .styles input {
+      position: absolute;
+      opacity: 0;
+    }
+    .styles label {
+      flex: 1;
+      text-align: center;
+    }
+    .styles span {
+      display: block;
+      padding: .1rem .8rem;
+      white-space: nowrap;
+    }
+    .styles label + label span {
+      border-left: 1.5px solid var(--ink);
+    }
+    .styles input:checked + span {
+      background: var(--ink);
+      color: var(--sheet);
+    }
+    .styles input:focus-visible + span {
+      outline: 3px solid var(--honey);
+      outline-offset: -3px;
+    }
+    #style-note {
+      max-width: 38rem;
+      margin: .75rem 0 0;
+      color: var(--sage);
+    }
+
+    /* Translator */
+    .boxes {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      border: 1.5px solid var(--ink);
+      background: var(--sheet);
+    }
+    .box {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+    .box + .box {
+      border-left: 1.5px solid var(--ink);
+    }
+    .box > label,
+    .box > .label {
+      min-height: 3.8rem;
+      padding: .5rem 1rem;
+      border-bottom: 1px solid var(--rule);
+      font-style: italic;
+      color: var(--sage);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: .5rem 1rem;
+    }
+    textarea,
+    #out {
+      flex: 1;
+      min-height: 15rem;
+      margin: 0;
+      padding: 1rem;
+      border: 0;
+      background: none;
+      color: inherit;
+      font: inherit;
+      line-height: 1.7;
+      resize: vertical;
+    }
+    #out {
+      font-family: var(--deseret);
+      font-size: 1.3rem;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+    button {
+      font: inherit;
+      font-style: normal;
+      color: var(--ink);
+      cursor: pointer;
+      background: var(--honey-wash);
+      border: 1.5px solid var(--honey);
+      border-radius: 2rem;
+      padding: .1rem .9rem;
+    }
+    @media (hover: hover) {
+      button:hover {
+        background: var(--honey);
+        color: var(--sheet);
+      }
+    }
+    #misses {
+      margin: .25rem 0 0;
+      color: var(--sage);
+      min-height: 1.6em;
+      white-space: pre-line;
+    }
+    /* A word that can be said two ways. Dotted = we guessed; solid = settled. */
+    #out .choice {
+      font: inherit;
+      color: inherit;
+      background: none;
+      padding: 0;
+      min-height: 0;
+      border: 0;
+      border-bottom: 2px solid var(--honey);
+      border-radius: 0;
+    }
+    #out .choice.guess {
+      border-bottom-style: dotted;
+      background: var(--honey-wash);
+    }
+    #out .choice:hover {
+      background: var(--honey-wash);
+      color: inherit;
+    }
+    #choice-note {
+      max-width: 38rem;
+      margin: .25rem 0 0;
+      color: var(--sage);
+    }
+    #choice-note code {
+      font-family: inherit;
+      font-style: italic;
+    }
+
+    /* Letter chart. Grouping is the lesson: pairs sit together. */
+    .group {
+      display: grid;
+      gap: .6rem;
+      grid-template-columns: repeat(auto-fill, minmax(8.5rem, 1fr));
+    }
+    .pairs {
+      display: grid;
+      gap: .6rem;
+      grid-template-columns: repeat(auto-fill, minmax(17.6rem, 1fr));
+    }
+    .pair {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      background: var(--sheet);
+      border: 1px solid var(--rule);
+    }
+    .pair .letter {
+      border: 0;
+    }
+    .pair .letter + .letter {
+      border-left: 1px dashed var(--rule);
+    }
+    .letter {
+      background: var(--sheet);
+      border: 1px solid var(--rule);
+      padding: .7rem .8rem .8rem;
+    }
+    .letter .glyph {
+      font-family: var(--deseret);
+      font-size: 2.6rem;
+      line-height: 1.1;
+      display: flex;
+      align-items: baseline;
+      gap: .35rem;
+    }
+    .letter .glyph small {
+      font-size: 1.5rem;
+      color: var(--sage);
+    }
+    .letter .word {
+      margin-top: .2rem;
+    }
+    .letter .word b {
+      color: var(--honey);
+      font-weight: 700;
+    }
+    .letter .spelled {
+      font-family: var(--deseret);
+      color: var(--sage);
+      min-height: 1.6em;
+    }
+    .letter.unused {
+      opacity: .45;
+    }
+    .letter .absent {
+      display: none;
+      font-style: italic;
+      font-size: .95rem;
+    }
+    .letter.unused .absent {
+      display: block;
+    }
+    .letter.unused .spelled {
+      display: none;
+    }
+
+    /* Reading practice */
+    .practice {
+      display: grid;
+      gap: .6rem;
+      grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
+      padding: 0;
+      margin: 0;
+      list-style: none;
+    }
+    .practice details {
+      background: var(--sheet);
+      border: 1px solid var(--rule);
+    }
+    .practice summary {
+      cursor: pointer;
+      padding: .7rem 1rem;
+      font-family: var(--deseret);
+      font-size: 1.7rem;
+      list-style: none;
+      overflow-wrap: anywhere;
+    }
+    .practice summary::-webkit-details-marker {
+      display: none;
+    }
+    .practice details[open] summary {
+      border-bottom: 1px dashed var(--rule);
+    }
+    .practice p {
+      margin: 0;
+      padding: .6rem 1rem .8rem;
+    }
+
+    footer {
+      margin-top: 4rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--rule);
+      color: var(--sage);
+      font-size: 1rem;
+      max-width: 38rem;
+    }
+
+    /* Fingers: the switch and Copy get 44px-tall targets. */
+    @media (pointer: coarse), (max-width: 34rem) {
+      .styles span {
+        padding: .6rem .8rem;
+      }
+      button {
+        min-height: 2.75rem;
+      }
+    }
+
+    /* Below this the Deseret bar cannot hold label, switch and Copy on one line, so the boxes stack. */
+    @media (max-width: 62rem) {
+      .boxes {
+        grid-template-columns: 1fr;
+      }
+      .box + .box {
+        border-left: 0;
+        border-top: 1.5px solid var(--ink);
+      }
+      textarea,
+      #out {
+        min-height: 9.5rem;
+      }
+    }
+
+    /* Phone: label and Copy share a line, the switch takes the full line under them. */
+    @media (max-width: 34rem) {
+      main {
+        padding: 0 1rem 3.5rem;
+      }
+      header {
+        padding: 2.25rem 0 .5rem;
+      }
+      h1 .d {
+        font-size: clamp(1.7rem, 9.4vw, 3rem);
+      }
+      h1 .said {
+        font-size: 1.2rem;
+      }
+      h2 {
+        font-size: 1.7rem;
+        margin-top: 2.75rem;
+      }
+      h3 {
+        margin-top: 1.75rem;
+      }
+      footer {
+        margin-top: 2.75rem;
+      }
+      .box > .label {
+        padding: .6rem .75rem .75rem;
+      }
+      #copy {
+        margin-left: auto;
+      }
+      .styles {
+        order: 1;
+        flex: 1 0 100%;
+        display: flex;
+        margin: 0;
+      }
+      .styles span {
+        padding-inline: .3rem;
+      }
+      textarea,
+      #out {
+        padding: .85rem 1rem;
+      }
+      .group,
+      .pairs,
+      .practice {
+        gap: .5rem;
+      }
+      .group,
+      .practice {
+        grid-template-columns: 1fr 1fr;
+      }
+      .pairs {
+        grid-template-columns: 1fr;
+      }
+      .letter {
+        padding: .55rem .7rem .6rem;
+      }
+      .letter .glyph {
+        font-size: 2.3rem;
+      }
+      .practice summary {
+        font-size: 1.45rem;
+        padding: .7rem .8rem;
+      }
+      .practice p {
+        padding: .5rem .8rem .7rem;
+      }
+    }
+    </style>
+  </head>
+  <body>
+    <main>
+      <header>
+        <h1>
+          <span class="d" lang="en-Dsrt"
+            aria-hidden="true">𐐜 𐐔𐐯𐑅𐐨𐑉𐐯𐐻 𐐈𐑊𐑁𐐲𐐺𐐯𐐻</span>
+          <span class="said">The Deseret Alphabet</span>
+        </h1>
+        <p>A way of writing English with one letter for each sound, made in Utah in the 1850s.
+      There are no silent letters and no spelling rules to memorize: if you can say a word, you can write it.</p>
+      </header>
+
+      <section aria-labelledby="try">
+        <h2 id="try">Write something</h2>
+        <p
+          class="lede">Type on the left, and choose a spelling style on the right.</p>
+
+        <div class="boxes">
+          <div class="box">
+            <label for="in">English</label>
+            <textarea id="in"
+              spellcheck="true">To be or not to be, that is the question. Which of you knows the way to the people of the valley?</textarea>
+          </div>
+          <div class="box">
+            <div class="label">
+              <span>Deseret</span>
+              <fieldset class="styles">
+                <legend class="sr-only">Spelling style</legend>
+                <label><input type="radio" name="style" value="modern" checked><span>Modern</span></label>
+                <label><input type="radio" name="style" value="abbreviated"><span>Abbreviated</span></label>
+                <label><input type="radio" name="style" value="1869"><span>1869</span></label>
+              </fieldset>
+              <button type="button" id="copy">Copy</button>
+            </div>
+            <div id="out" lang="en-Dsrt" aria-live="polite"></div>
+          </div>
+        </div>
+        <p id="style-note" aria-live="polite"></p>
+        <p id="choice-note"
+          hidden>Underlined words can be said two ways. Press one to switch it.
+      Your choice is written into the English as a tag, like <code>read{past}</code>; a dotted underline is a guess.</p>
+        <p id="misses" aria-live="polite"></p>
+      </section>
+
+      <section aria-labelledby="letters">
+        <h2 id="letters">The letters</h2>
+        <p
+          class="lede">Each letter makes the sound marked in its example word, every time. A capital is the same shape drawn larger.
+      Under each word is how it is spelled in the style chosen above.</p>
+
+        <h3>Long vowels</h3>
+        <div class="group"
+          data-letters="𐐀|eat|ea 𐐁|ate|a 𐐂|art|a 𐐃|law|aw 𐐄|oat|oa 𐐅|ooze|oo"></div>
+
+        <h3>Short vowels</h3>
+        <div class="group"
+          data-letters="𐐆|it|i 𐐇|bet|e 𐐈|at|a 𐐉|hot|o 𐐊|but|u 𐐋|book|oo"></div>
+
+        <h3>Gliding vowels</h3>
+        <p
+          class="lede">Two vowel sounds run together. The 1869 printers dropped the last two letters and spelled those sounds with two letters each.</p>
+        <div class="group"
+          data-letters="𐐌|ice|i 𐐍|owl|ow 𐐦|oil|oi|1869 𐐧|few|ew|1869"></div>
+
+        <h3>Consonants in pairs</h3>
+        <p
+          class="lede">Each pair uses the same mouth shape: first as a whisper, then with your voice on.</p>
+        <div class="pairs"
+          data-pairs="𐐑|pie|p 𐐒|bee|b 𐐓|tea|t 𐐔|day|d 𐐕|cheese|ch 𐐖|joy|j 𐐗|key|k 𐐘|go|g 𐐙|fee|f 𐐚|vow|v 𐐛|thin|th 𐐜|this|th 𐐝|see|s 𐐞|zoo|z 𐐟|she|sh 𐐠|measure|s"></div>
+
+        <h3>The rest</h3>
+        <div class="group"
+          data-letters="𐐎|wet|w 𐐏|yes|y 𐐐|hat|h 𐐡|row|r 𐐢|low|l 𐐣|me|m 𐐤|no|n 𐐥|sing|ng"></div>
+      </section>
+
+      <section aria-labelledby="read">
+        <h2 id="read">Try reading</h2>
+        <p class="lede">Sound each one out, then press it to check.</p>
+        <ul class="practice"
+          data-words="cat|sun|ship|moon|bread|honey|light|school|thing|mountain"></ul>
+      </section>
+
+      <footer>
+    Pronunciations come from the CMU Pronouncing Dictionary, which is American English.
+    The 1869 style follows the spelling of the Deseret Book of Mormon printed that year.
+  </footer>
+    </main>
+
+    <script type="module" src="app.js"></script>
+  </body>
+</html>

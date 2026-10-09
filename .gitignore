@@ -1,0 +1,29 @@
+# Build output (deno task build)
+dist/
+
+# 1869 transcription and the word list derived from it: (c) Illinois Deseret
+# Consortium, "educational and personal use but not for publication".
+# Never commit or deploy this.
+corpus/
+
+# Working screenshots
+samples/screenshots/
+
+# Agent scratch dirs
+.superpowers/
+.playwright-mcp/
+.playwright-profile/
+.impeccable/
+.worktrees/
+.claude/worktrees/
+.claude/settings.local.json
+
+# OS and editor
+.DS_Store
+.vscode/
+.idea/
+*.swp
+
+# Deno
+coverage/
+.env
