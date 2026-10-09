@@ -1,0 +1,120 @@
+<!doctype html>
+<!-- Source for web/og.png (1200x630). How to re-render: see "Develop" in the README -->
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <link rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+Deseret&family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&display=block">
+    <style>
+    :root {
+      --salt: #e8eeec;
+      --sheet: #f8faf9;
+      --ink: #1c2742;
+      --sage: #5f7566;
+      --rule: #b9c6c0;
+      --honey: #c58a17;
+      --honey-wash: #f6e6bf;
+    }
+    * {
+      box-sizing: border-box;
+    }
+    html,
+    body {
+      margin: 0;
+      width: 1200px;
+      height: 630px;
+      overflow: hidden;
+    }
+    body {
+      background: var(--salt);
+      color: var(--ink);
+      font-family: "Old Standard TT", Georgia, serif;
+      padding: 44px;
+    }
+    .d {
+      font-family: "Noto Sans Deseret", "Apple Symbols", sans-serif;
+    }
+    .frame {
+      height: 100%;
+      border: 3px solid var(--ink);
+      background: var(--sheet);
+      padding: 46px 56px 0;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+    }
+    h1 {
+      margin: 0;
+      font-weight: 400;
+      font-size: 96px;
+      line-height: 1.05;
+      white-space: nowrap;
+    }
+    .said {
+      font-style: italic;
+      font-size: 44px;
+      color: var(--sage);
+      margin-top: 14px;
+    }
+    .line {
+      font-size: 32px;
+      margin-top: 22px;
+      max-width: 880px;
+      line-height: 1.35;
+    }
+    .line b {
+      color: var(--honey);
+    }
+    .tiles {
+      position: absolute;
+      left: 56px;
+      right: -40px;
+      bottom: -34px;
+      display: flex;
+      gap: 14px;
+    }
+    .tile {
+      flex: 0 0 132px;
+      height: 150px;
+      border: 2px solid var(--rule);
+      background: var(--salt);
+      padding: 10px 14px;
+      font-size: 64px;
+      line-height: 1.1;
+    }
+    .tile small {
+      display: block;
+      font-family: "Old Standard TT", serif;
+      font-size: 24px;
+      margin-top: 2px;
+    }
+    .tile small b {
+      color: var(--honey);
+    }
+    .tile.on {
+      background: var(--honey-wash);
+      border-color: var(--honey);
+    }
+    </style>
+  </head>
+  <body>
+    <div class="frame">
+      <h1 class="d">𐐜 𐐔𐐯𐑅𐐨𐑉𐐯𐐻 𐐈𐑊𐑁𐐲𐐺𐐯𐐻</h1>
+      <div class="said">The Deseret Alphabet</div>
+      <div
+        class="line">One letter for each sound of English. Learn the letters and write anything <b>by ear</b>.</div>
+      <div class="tiles d">
+        <div class="tile">𐐀<small><b>ea</b>t</small></div>
+        <div class="tile">𐐁<small><b>a</b>te</small></div>
+        <div class="tile on">𐐒<small><b>b</b>ee</small></div>
+        <div class="tile">𐐃<small>l<b>aw</b></small></div>
+        <div class="tile">𐐄<small><b>oa</b>t</small></div>
+        <div class="tile">𐐟<small><b>sh</b>e</small></div>
+        <div class="tile">𐐌<small><b>i</b>ce</small></div>
+        <div class="tile">𐐥<small>si<b>ng</b></small></div>
+        <div class="tile">𐐛<small><b>th</b>in</small></div>
+      </div>
+    </div>
+  </body>
+</html>
