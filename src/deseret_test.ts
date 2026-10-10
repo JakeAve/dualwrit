@@ -58,3 +58,37 @@ Deno.test("unknown words pass through and are counted", () => {
   assertEquals(out, "zzyzx 𐐿𐐰𐐻 zzyzx");
   assertEquals([...misses], [["zzyzx", 2]]);
 });
+
+Deno.test("a word that is also an Object property", () => {
+  assertEquals(d("constructor"), "𐐿𐐲𐑌𐑅𐐻𐑉𐐲𐐿𐐻𐐯𐑉");
+});
+
+Deno.test("Deseret back to English", async (t) => {
+  const { reverseIndex, untranscribe } = await import("./deseret.ts");
+  const back = (text: string, style: "modern" | "1869" = "modern") =>
+    untranscribe(text, reverseIndex(dict, style)).out;
+
+  await t.step("common words, capitals and punctuation", () => {
+    const text = "To be or not to be, THAT is the question. I see the way.";
+    assertEquals(back(m(text)), text);
+    assertEquals(back(d(text), "1869"), text);
+  });
+  await t.step("unknown Deseret passes through and is counted", () => {
+    const { out, misses } = untranscribe(
+      "𐐿𐐰𐐻 𐐿𐐿𐐿",
+      reverseIndex(dict, "modern"),
+    );
+    assertEquals(out, "cat 𐐿𐐿𐐿");
+    assertEquals([...misses], [["𐐿𐐿𐐿", 1]]);
+  });
+  await t.step("an edit keeps the English of untouched words", () => {
+    const english = "I read{past} two books, too.";
+    const { out, pairs } = transcribe(english, dict);
+    assertEquals(untranscribe(out, new Map(), pairs).out, english);
+    const edited = out.replace(m("books"), m("letters"));
+    assertEquals(
+      untranscribe(edited, reverseIndex(dict, "modern"), pairs).out,
+      "I read{past} two letters, too.",
+    );
+  });
+});

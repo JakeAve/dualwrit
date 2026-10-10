@@ -189,6 +189,10 @@ const overrides: Record<string, string> = {
   hearken: "HH AA1 R K AH0 N",
 };
 
+// Table lookup that ignores what every object inherits ("constructor").
+const own = (table: Table, w: string): string | undefined =>
+  Object.hasOwn(table, w) ? table[w] : undefined;
+
 const shift = (s: string, by: number) =>
   [...s].map((c) => String.fromCodePoint(c.codePointAt(0)! + by)).join("");
 const lower = (s: string) => shift(s, 0x28);
@@ -213,33 +217,41 @@ export function parseDict(text: string): Dict {
   return dict;
 }
 
-const MAX_KEY = 4;
-const bits = (m: number) => m.toString(2).replaceAll("0", "").length;
-// For each key length, which tokens to strip stress from: none first (most specific), all last.
-const masks = Array.from(
-  { length: MAX_KEY + 1 },
-  (_, n) =>
-    Array.from({ length: 1 << n }, (_, m) => m).sort((a, b) =>
-      bits(a) - bits(b)
-    ),
-);
+// A table's keys split into phonemes, most specific first: longer keys, then
+// keys that name more stresses. Grouped by the first phoneme without its stress.
+type Rule = { key: string[]; glyphs: string };
+const compiled = new Map<Table, Map<string, Rule[]>>();
+const bare = (phone: string) => phone.replace(/\d/, "");
+
+function compile(table: Table): Map<string, Rule[]> {
+  const stresses = (key: string[]) => key.filter((k) => /\d/.test(k)).length;
+  const rules = Object.entries(table)
+    .map(([key, glyphs]) => ({ key: key.split(" "), glyphs: lower(glyphs) }))
+    .sort((a, b) =>
+      b.key.length - a.key.length || stresses(b.key) - stresses(a.key)
+    );
+  const byFirst = new Map<string, Rule[]>();
+  for (const rule of rules) {
+    const first = bare(rule.key[0]);
+    byFirst.set(first, [...(byFirst.get(first) ?? []), rule]);
+  }
+  compiled.set(table, byFirst);
+  return byFirst;
+}
 
 function phonesToDeseret(phones: string[], table: Table): string {
+  const rules = compiled.get(table) ?? compile(table);
   const tokens = ["^", ...phones, "#"];
+  const plain = tokens.map(bare);
   let out = "";
-  next: for (let i = 0; i < tokens.length;) {
-    for (let n = Math.min(MAX_KEY, tokens.length - i); n > 0; n--) {
-      for (const mask of masks[n]) {
-        const key = tokens.slice(i, i + n)
-          .map((t, k) => mask >> k & 1 ? t.replace(/\d/, "") : t).join(" ");
-        if (key in table) {
-          out += lower(table[key]);
-          i += n;
-          continue next;
-        }
-      }
-    }
-    throw new Error(`no Deseret letter for phoneme ${tokens[i]}`);
+  for (let i = 0; i < tokens.length;) {
+    // A key phoneme with a stress digit matches that stress only.
+    const rule = rules.get(plain[i])?.find(({ key }) =>
+      key.every((k, j) => k === tokens[i + j] || k === plain[i + j])
+    );
+    if (!rule) throw new Error(`no Deseret letter for phoneme ${tokens[i]}`);
+    out += rule.glyphs;
+    i += rule.key.length;
   }
   return out;
 }
@@ -305,7 +317,7 @@ const suffixes: [RegExp, (last: string) => string[]][] = [
 // iniquities, unfitted). ponytail: regular affixes only, no stress shifts;
 // British spellings (vigour, solemnised) still miss.
 function lookup(w: string, dict: Dict): string[] | undefined {
-  const hit = overrides[w]?.split(" ") ?? usual(dict.get(w));
+  const hit = own(overrides, w)?.split(" ") ?? usual(dict.get(w));
   if (hit) return hit;
   for (const [suffix, added] of suffixes) {
     if (!suffix.test(w)) continue;
@@ -329,9 +341,23 @@ function lookup(w: string, dict: Dict): string[] | undefined {
   }
 }
 
+// An English word and its optional {tag}. Apostrophes count only inside a
+// word, so quote marks stay punctuation.
+export const WORD = /([A-Za-z]+(?:['’][A-Za-z]+)*)(?:\{([a-z]*)\})?/g;
+
+// One lowercase word with known phonemes, spelled in a style.
+function spell(w: string, phones: string[], style: Style): string {
+  const { table, words, respell: old } = styles[style];
+  const whole = own(words, w);
+  return whole
+    ? lower(whole)
+    : phonesToDeseret(old ? respell(w, phones) : phones, table);
+}
+
 // One word in the text that can be said more than one way, and what was done.
 export type Heteronym = {
   word: string;
+  n: number; // which word of the text it is, counting from 0
   options: string[]; // labels, usual reading first; write word{label} to pick one
   chosen: string;
   by: "tag" | "rule" | "guess";
@@ -345,10 +371,8 @@ export type Heteronym = {
 // `misses`. A word that can be said two ways is listed in `choices`; tag it in
 // the text to overrule the choice: "I read{past} books".
 export function transcribe(text: string, dict: Dict, style: Style = "modern") {
-  // Apostrophes count only inside a word, so quote marks stay punctuation.
-  const pattern = /([A-Za-z]+(?:['’][A-Za-z]+)*)(?:\{([a-z]*)\})?/g;
   // Split into sentences and clauses first so a word can see its neighbours.
-  const found = [...text.matchAll(pattern)].map((m, i, all) => {
+  const found = [...text.matchAll(WORD)].map((m, i, all) => {
     const gap = i
       ? text.slice(all[i - 1].index + all[i - 1][0].length, m.index)
       : "";
@@ -373,12 +397,15 @@ export function transcribe(text: string, dict: Dict, style: Style = "modern") {
     };
   };
 
-  const { table, words, respell: old } = styles[style];
+  const { words } = styles[style];
+  // [english as written, deseret] for every word, so an edit to the Deseret
+  // can keep the English of the words it did not touch (`untranscribe`).
+  const pairs: [string, string][] = [];
   const misses = new Map<string, number>();
   const choices: Heteronym[] = [];
   const warnings: string[] = [];
   let out = "", last = 0, n = -1;
-  for (const m of text.matchAll(pattern)) {
+  for (const m of text.matchAll(WORD)) {
     const [all, word, tag] = m;
     const w = found[++n].word;
     out += text.slice(last, m.index);
@@ -392,14 +419,10 @@ export function transcribe(text: string, dict: Dict, style: Style = "modern") {
           : `${all}: "${word}" is only said one way, so the tag was ignored`,
       );
     }
-    const whole = words[w];
     const phones = choice?.phones ?? lookup(w, dict);
     let spelled = word;
-    if (whole || phones) {
-      const deseret = whole ? lower(whole) : phonesToDeseret(
-        old ? respell(w, phones!) : phones!,
-        table,
-      );
+    if (own(words, w) || phones) {
+      const deseret = spell(w, phones ?? [], style);
       spelled = /^[A-Z'’]{2,}$/.test(word)
         ? upper(deseret)
         : /^[A-Z]/.test(word)
@@ -411,6 +434,7 @@ export function transcribe(text: string, dict: Dict, style: Style = "modern") {
     if (choice) {
       choices.push({
         word,
+        n,
         options: choice.options,
         chosen: choice.chosen,
         by: choice.by,
@@ -421,7 +445,122 @@ export function transcribe(text: string, dict: Dict, style: Style = "modern") {
       });
     }
     out += spelled;
+    pairs.push([all, spelled]);
   }
   out += text.slice(last);
-  return { out, misses, choices, warnings };
+  return { out, misses, choices, warnings, pairs };
+}
+
+// Common words, commonest first. Many English words share one Deseret
+// spelling (to/too/two), and CMUdict is full of surnames (lite, nite, kat);
+// reading Deseret back picks the earliest word listed here.
+// ponytail: hand-kept list; words outside it fall back to the shortest
+// spelling, which is often wrong ("bred" for bread). Swap in a real word
+// frequency file when reading back fresh Deseret matters.
+const common =
+  `the of and to a in is it you that he was for on are with as i his they be at
+one have this from or had by not but what all were we when your can said there
+use an each which she do how their if will up other about out many then them
+these so some her would make like him into time has look two more write go see
+number no way could people my than first water been call who oil its now find
+long down day did get come made may part over new sound take only little work
+know place year live me back give most very after thing our just name good
+sentence man think say great where help through much before line right too mean
+old any same tell boy follow came want show also around form three small set
+put end does another well large must big even such because turn here why ask
+went men read need land different home us move try kind hand picture again
+change off play spell air away animal house point page letter mother answer
+found study still learn should world high every near add food between own below
+country plant last school father keep tree never start city earth eye light
+thought head under story saw left few while along might close something seem
+next hard open example begin life always those both paper together got group
+often run important until children side feet car mile night walk white sea began
+grow took river four carry state once book hear stop without second late miss
+idea enough eat face watch far real almost let above girl sometimes mountain cut
+young talk soon list song being leave family body music color stand sun question
+fish area mark dog horse bird problem complete room knew since ever piece told
+usually friend easy heard order red door sure become top ship across today
+during short better best however low hour black whole king whether bread son
+war peace heart word lord god holy son week whose buy bear wear there's
+sweet meet flower wood won would rain made plain sale tale wait weight way
+piece road rode seen scene whole their there hear here`.split(/\s+/);
+const rank = new Map<string, number>();
+common.forEach((w, i) => rank.has(w) || rank.set(w, i));
+
+// Lowercase Deseret spelling -> the likeliest English word, for one style.
+export type Reverse = Map<string, string>;
+
+export function reverseIndex(dict: Dict, style: Style): Reverse {
+  const index: Reverse = new Map();
+  const cost = new Map<string, number>();
+  const add = (w: string, phones: string[], primary: boolean) => {
+    const d = spell(w, phones, style);
+    // A word's usual reading beats another word's rare one: "thee", not "the".
+    const c = (primary ? 0 : 1e9) + (rank.get(w) ?? 1e6) * 100 + w.length;
+    if (c < (cost.get(d) ?? Infinity)) {
+      index.set(d, w);
+      cost.set(d, c);
+    }
+  };
+  for (const [w, variants] of dict) {
+    if (!/^[a-z]+('[a-z]+)*$/.test(w)) continue;
+    const first = own(overrides, w)?.split(" ") ?? usual(variants)!;
+    add(w, first, true);
+    for (const v of variants) if (v !== first) add(w, v, false);
+  }
+  for (const w in overrides) {
+    if (!dict.has(w)) add(w, overrides[w].split(" "), true);
+  }
+  return index;
+}
+
+// A word as it appears in Deseret text: Deseret letters, or a Latin word
+// the transcriber left as written.
+const DESERET_WORD = /[\u{10400}-\u{1044F}]+|[A-Za-z]+(?:['’][A-Za-z]+)*/gu;
+const isCapital = (c: string) => c.codePointAt(0)! < 0x10428;
+
+// Deseret -> English, word by word. `kept` is the `pairs` of the text as it
+// stood before this edit: unchanged words at either end keep their English, so
+// only the words actually edited are looked up. Deseret words with no English
+// match pass through unchanged and are counted in `misses`.
+export function untranscribe(
+  text: string,
+  index: Reverse,
+  kept: [string, string][] = [],
+) {
+  const tokens = [...text.matchAll(DESERET_WORD)];
+  const most = Math.min(tokens.length, kept.length);
+  let head = 0, tail = 0;
+  while (head < most && tokens[head][0] === kept[head][1]) head++;
+  while (
+    head + tail < most && tokens.at(-1 - tail)![0] === kept.at(-1 - tail)![1]
+  ) tail++;
+
+  const misses = new Map<string, number>();
+  const pairs: [string, string][] = [];
+  let out = "", last = 0;
+  tokens.forEach((m, i) => {
+    const d = m[0];
+    let english = d;
+    if (i < head) english = kept[i][0];
+    else if (i >= tokens.length - tail) {
+      english = kept[kept.length - (tokens.length - i)][0];
+    } else if (d.codePointAt(0)! >= 0x10400) {
+      const letters = [...d];
+      const w = index.get(
+        letters.map((c) => isCapital(c) ? lower(c) : c).join(""),
+      );
+      if (!w) misses.set(d, (misses.get(d) ?? 0) + 1);
+      else if (letters.length > 1 && letters.every(isCapital)) {
+        english = w.toUpperCase();
+      } else if (isCapital(letters[0]) || w === "i" || w.startsWith("i'")) {
+        english = w[0].toUpperCase() + w.slice(1);
+      } else english = w;
+    }
+    out += text.slice(last, m.index) + english;
+    last = m.index + d.length;
+    pairs.push([english, d]);
+  });
+  out += text.slice(last);
+  return { out, misses, pairs };
 }

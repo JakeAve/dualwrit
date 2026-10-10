@@ -37,6 +37,7 @@
       --rule: #b9c6c0;
       --honey: #c58a17;
       --honey-wash: #f6e6bf;
+      --wrong: #a13d2d;
       --latin: "Old Standard TT", "Iowan Old Style", Georgia, serif;
       --deseret: "Noto Sans Deseret", "Apple Symbols", "Segoe UI Historic", sans-serif;
     }
@@ -61,7 +62,8 @@
       outline: 3px solid var(--honey);
       outline-offset: 2px;
     }
-    textarea:focus-visible {
+    textarea:focus-visible,
+    #out:focus-visible {
       outline-offset: -3px;
     } /* stay inside the box rules */
 
@@ -267,7 +269,8 @@
       padding: 0;
       border-radius: 50%;
     }
-    .practice .say {
+    .practice .say,
+    #quiz .say {
       position: static;
       display: inline-grid;
       vertical-align: middle;
@@ -393,6 +396,199 @@
       padding: .6rem 1rem .8rem;
     }
 
+    /* Keyboard map: each key is a small Option letter over its main letter. */
+    #keys {
+      max-width: 38rem;
+      margin: 1rem auto 0;
+      text-align: center;
+    }
+    #keys p {
+      margin: .25rem 0 .75rem;
+      color: var(--sage);
+    }
+    .keys {
+      display: grid;
+      gap: .3rem;
+    }
+    .keyrow {
+      display: flex;
+      justify-content: center;
+      gap: .3rem;
+    }
+    .key {
+      flex: 0 1 3.3rem;
+      display: grid;
+      grid-template-rows: 1.5rem 2.4rem;
+      background: var(--sheet);
+      border: 1px solid var(--rule);
+      border-radius: .3rem;
+      overflow: hidden;
+    }
+    .key button {
+      min-height: 0;
+      padding: 0;
+      border: 0;
+      border-radius: 0;
+      background: none;
+      font-family: var(--deseret);
+      font-size: 1.5rem;
+      line-height: 1;
+    }
+    .key button:hover,
+    .key button:active {
+      background: var(--honey-wash);
+      color: var(--ink);
+    }
+    .key .alt {
+      font-size: 1rem;
+      color: var(--sage);
+      border-bottom: 1px dashed var(--rule);
+    }
+    .key .main {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: .25rem;
+    }
+    .key small {
+      font: .8rem var(--latin);
+      color: var(--sage);
+    }
+
+    .keyrow.touch {
+      display: none;
+    }
+    .touch .key {
+      grid-template-rows: 2.6rem;
+    }
+    .touch .key:nth-child(3) {
+      flex: 1 1 9rem; /* space bar */
+    }
+    .touch button {
+      font-family: var(--latin);
+    }
+    .keys.shift [data-act="shift"] {
+      background: var(--honey);
+    }
+    /* Touch screens: the phone's keyboard is held down in a Deseret box, so
+       this one takes its place at the bottom of the screen. */
+    @media (pointer: coarse) {
+      .keyrow.touch {
+        display: flex;
+      }
+      .keys.docked {
+        position: fixed;
+        z-index: 1;
+        inset: auto 0 0;
+        padding: .4rem .25rem calc(.4rem + env(safe-area-inset-bottom));
+        background: var(--salt);
+        border-top: 1.5px solid var(--ink);
+      }
+      .keys.docked .key {
+        flex: 1 1 0;
+      }
+      .keys.docked .key:has(.main) {
+        grid-template-rows: 1.9rem 2.6rem;
+      }
+      /* Room to scroll the box clear of the keyboard. */
+      body:has(.keys.docked) {
+        padding-bottom: 19rem;
+      }
+    }
+
+    /* Practice questions */
+    select {
+      font: inherit;
+      color: inherit;
+      margin-left: .5rem;
+    }
+    #quiz {
+      max-width: 38rem;
+      margin-top: 1rem;
+      padding: 1rem 1.25rem;
+      background: var(--sheet);
+      border: 1.5px solid var(--ink);
+    }
+    #quiz p {
+      margin: 0;
+    }
+    #q-show {
+      margin: .5rem 0 1rem;
+      font-size: 2.6rem;
+      line-height: 1.2;
+    }
+    #q-show b {
+      color: var(--honey);
+    }
+    #quiz [lang="en-Dsrt"] {
+      font-family: var(--deseret);
+    }
+    #q-answer {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: .6rem;
+    }
+    #q-answer .keys {
+      flex: 1 0 100%;
+    }
+    .opt {
+      min-width: 4.5rem;
+      padding: .4rem 1rem;
+      font-size: 1.3rem;
+      background: var(--sheet);
+    }
+    .opt b {
+      color: var(--honey);
+    }
+    .opt [lang] {
+      font-size: 1.9rem;
+      line-height: 1.2;
+    }
+    #quiz button:disabled {
+      pointer-events: none;
+      opacity: .6;
+    }
+    #quiz .opt.right {
+      opacity: 1;
+      background: var(--sage);
+      border-color: var(--sage);
+      color: var(--sheet);
+    }
+    #quiz .opt.right b {
+      color: inherit;
+    }
+    #quiz .opt.wrong {
+      opacity: 1;
+      border-color: var(--wrong);
+      color: var(--wrong);
+      text-decoration: line-through;
+    }
+    #q-field {
+      flex: 1;
+      min-width: 10rem;
+      padding: .3rem .6rem;
+      border: 1.5px solid var(--ink);
+      font-size: 1.5rem;
+      line-height: 1.4;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+    #quiz #q-result {
+      min-height: 1.6em;
+      margin: .75rem 0 .5rem;
+    }
+    #q-result.right {
+      color: var(--sage);
+    }
+    #q-result.wrong {
+      color: var(--wrong);
+    }
+    #q-score {
+      color: var(--sage);
+      margin-left: .5rem;
+    }
+
     footer {
       margin-top: 4rem;
       padding-top: 1rem;
@@ -482,6 +678,16 @@
       .pairs {
         grid-template-columns: 1fr;
       }
+      .keyrow,
+      .keys {
+        gap: .2rem;
+      }
+      .key button {
+        font-size: 1.25rem;
+      }
+      .key small {
+        display: none;
+      }
       .letter {
         padding: .55rem .7rem .6rem;
       }
@@ -513,7 +719,7 @@
       <section aria-labelledby="try">
         <h2 id="try">Write something</h2>
         <p
-          class="lede">Type on the left, and choose a spelling style on the right.</p>
+          class="lede">Type in either box and the other follows. Choose a spelling style on the right.</p>
 
         <div class="boxes">
           <div class="box">
@@ -523,7 +729,7 @@
           </div>
           <div class="box">
             <div class="label">
-              <span>Deseret</span>
+              <span id="out-label">Deseret</span>
               <fieldset class="styles">
                 <legend class="sr-only">Spelling style</legend>
                 <label><input type="radio" name="style" value="modern" checked><span>Modern</span></label>
@@ -532,7 +738,9 @@
               </fieldset>
               <button type="button" id="copy">Copy</button>
             </div>
-            <div id="out" lang="en-Dsrt" aria-live="polite"></div>
+            <div id="out" lang="en-Dsrt" contenteditable="plaintext-only"
+              role="textbox" aria-multiline="true" aria-labelledby="out-label"
+              spellcheck="false"></div>
           </div>
         </div>
         <p id="style-note" aria-live="polite"></p>
@@ -540,6 +748,12 @@
           hidden>Underlined words can be said two ways. Press one to switch it.
       Your choice is written into the English as a tag, like <code>read{past}</code>; a dotted underline is a guess.</p>
         <p id="misses" aria-live="polite"></p>
+
+        <div id="keys">
+          <p>Use your keyboard to type Deseret letters, hold (Alt/Option) for
+        alternate letters</p>
+          <div id="keymap"></div>
+        </div>
       </section>
 
       <section aria-labelledby="letters">
@@ -579,6 +793,23 @@
         <p class="lede">Sound each one out, then press it to check.</p>
         <ul class="practice"
           data-words="cat|sun|ship|moon|bread|honey|light|school|thing|mountain"></ul>
+      </section>
+
+      <section aria-labelledby="practice">
+        <h2 id="practice">Practice</h2>
+        <p class="lede">One question at a time. Start with a few letters and
+      add more; words to write and read appear once you have learned enough
+      letters to spell them.</p>
+        <label>Letters to practice
+          <select id="lesson"></select></label>
+        <div id="quiz">
+          <p id="q-prompt"></p>
+          <div id="q-show"></div>
+          <div id="q-answer"></div>
+          <p id="q-result" aria-live="polite"></p>
+          <p><button type="button" id="q-next" hidden>Next</button>
+            <span id="q-score"></span></p>
+        </div>
       </section>
 
       <footer>
