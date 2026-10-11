@@ -16,6 +16,9 @@ const byCode = new Map(
   ) => [`Key${latin.toUpperCase()}`, glyphs]),
 );
 const lower = (g: string) => String.fromCodePoint(g.codePointAt(0)! + 0x28);
+// The capital a key press types, if it is a letter key.
+export const keyGlyph = (e: KeyboardEvent) =>
+  byCode.get(e.code)?.[e.altKey ? 1 : 0];
 
 // Edit `box` at its caret as if by typing. execCommand is deprecated, but it
 // is the one edit that keeps undo and fires `input`.
@@ -60,7 +63,7 @@ export function deseretKeys(box: HTMLElement) {
     hold(false); // so this key can edit: a letter, or Option+Arrow, Option+Delete
     setTimeout(() => hold(option));
     if (e.metaKey || (e.ctrlKey && !e.altKey)) return;
-    const glyph = byCode.get(e.code)?.[e.altKey ? 1 : 0];
+    const glyph = keyGlyph(e);
     if (!glyph) return;
     e.preventDefault();
     type(box, glyph, e.shiftKey !== e.getModifierState("CapsLock"));

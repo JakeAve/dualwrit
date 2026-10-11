@@ -222,11 +222,14 @@
       border-radius: 2rem;
       padding: .1rem .9rem;
     }
+    /* Ink on honey: pale text there is under 3:1. */
     @media (hover: hover) {
       button:hover {
         background: var(--honey);
-        color: var(--sheet);
       }
+    }
+    button:active {
+      background: var(--honey);
     }
     #misses {
       margin: .25rem 0 0;
@@ -270,7 +273,7 @@
       border-radius: 50%;
     }
     .practice .say,
-    #quiz .say {
+    #drill .say {
       position: static;
       display: inline-grid;
       vertical-align: middle;
@@ -496,97 +499,114 @@
       }
     }
 
-    /* Practice questions */
-    select {
-      font: inherit;
-      color: inherit;
-      margin-left: .5rem;
-    }
-    #quiz {
+    /* Spelling practice */
+    #drill {
       max-width: 38rem;
       margin-top: 1rem;
       padding: 1rem 1.25rem;
       background: var(--sheet);
       border: 1.5px solid var(--ink);
     }
-    #quiz p {
+    #drill p {
       margin: 0;
+      min-height: 1.6em;
     }
-    #q-show {
-      margin: .5rem 0 1rem;
-      font-size: 2.6rem;
-      line-height: 1.2;
-    }
-    #q-show b {
-      color: var(--honey);
-    }
-    #quiz [lang="en-Dsrt"] {
+    #drill [lang="en-Dsrt"] {
       font-family: var(--deseret);
     }
-    #q-answer {
+    #d-note {
+      color: var(--sage);
+    }
+    #d-note [lang] {
+      font-size: 1.4em;
+      color: var(--ink);
+    }
+    #d-word {
       display: flex;
       flex-wrap: wrap;
-      align-items: center;
-      gap: .6rem;
+      align-items: flex-start;
+      gap: .5rem;
+      margin: .75rem 0 .5rem;
+      font-size: 2.2rem;
+      line-height: 3.5rem;
     }
-    #q-answer .keys {
-      flex: 1 0 100%;
+    .chunk {
+      display: grid;
+      justify-items: center;
     }
-    .opt {
-      min-width: 4.5rem;
-      padding: .4rem 1rem;
-      font-size: 1.3rem;
-      background: var(--sheet);
+    .chunk small {
+      font-size: 1rem;
+      line-height: 1.4;
+      color: var(--sage);
     }
-    .opt b {
-      color: var(--honey);
+    .box {
+      width: 3.5rem;
+      height: 3.5rem;
+      text-align: center;
+      background: var(--salt);
+      border: 1.5px solid var(--rule);
     }
-    .opt [lang] {
-      font-size: 1.9rem;
-      line-height: 1.2;
+    .box.here {
+      border-color: var(--ink);
     }
-    #quiz button:disabled {
-      pointer-events: none;
-      opacity: .6;
+    #d-word:focus-visible {
+      outline: none;
     }
-    #quiz .opt.right {
-      opacity: 1;
+    #d-word:focus-visible .here {
+      outline: 3px solid var(--honey);
+      outline-offset: 2px;
+    }
+    .box.miss {
+      border-color: var(--wrong);
+    }
+    .box.told {
+      color: var(--sage);
+      border-style: dashed;
+    }
+    #d-keys {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .4rem;
+      margin: .75rem 0;
+    }
+    #d-keys button {
+      min-width: 2.8rem;
+      padding: .2rem .5rem;
+      font-size: 1.5rem;
+    }
+    #d-progress {
+      margin-top: 1rem;
+      padding-top: .75rem;
+      border-top: 1px solid var(--rule);
+    }
+    #d-strip {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .25rem;
+      margin-bottom: .75rem;
+    }
+    #d-strip span {
+      width: 1.9rem;
+      line-height: 1.9rem;
+      text-align: center;
+      color: var(--rule);
+      border: 1px solid var(--rule);
+    }
+    #d-strip .play {
+      color: var(--ink);
+      border-color: var(--ink);
+    }
+    #d-strip .known {
+      color: var(--sheet);
       background: var(--sage);
       border-color: var(--sage);
-      color: var(--sheet);
     }
-    #quiz .opt.right b {
-      color: inherit;
+    #d-progress button {
+      font-size: 1rem;
     }
-    #quiz .opt.wrong {
-      opacity: 1;
-      border-color: var(--wrong);
-      color: var(--wrong);
-      text-decoration: line-through;
-    }
-    #q-field {
-      flex: 1;
-      min-width: 10rem;
-      padding: .3rem .6rem;
-      border: 1.5px solid var(--ink);
-      font-size: 1.5rem;
-      line-height: 1.4;
-      white-space: nowrap;
-      overflow: hidden;
-    }
-    #quiz #q-result {
-      min-height: 1.6em;
-      margin: .75rem 0 .5rem;
-    }
-    #q-result.right {
-      color: var(--sage);
-    }
-    #q-result.wrong {
-      color: var(--wrong);
-    }
-    #q-score {
-      color: var(--sage);
-      margin-left: .5rem;
+    #drill button:disabled {
+      opacity: .5;
+      pointer-events: none;
     }
 
     footer {
@@ -797,18 +817,21 @@
 
       <section aria-labelledby="practice">
         <h2 id="practice">Practice</h2>
-        <p class="lede">One question at a time. Start with a few letters and
-      add more; words to write and read appear once you have learned enough
-      letters to spell them.</p>
-        <label>Letters to practice
-          <select id="lesson"></select></label>
-        <div id="quiz">
-          <p id="q-prompt"></p>
-          <div id="q-show"></div>
-          <div id="q-answer"></div>
-          <p id="q-result" aria-live="polite"></p>
-          <p><button type="button" id="q-next" hidden>Next</button>
-            <span id="q-score"></span></p>
+        <p class="lede">Spell one word at a time. The boxes are the sounds whose
+      letters you have met: type the Deseret letter for each. The rest of the
+      word stays in Latin until its letters arrive, a new one each time you
+      have the hang of the last.</p>
+        <div id="drill">
+          <p id="d-note" aria-live="polite"></p>
+          <div id="d-word" tabindex="0" role="group"></div>
+          <p id="d-hint" aria-live="polite"></p>
+          <div id="d-keys"></div>
+          <p><button type="button" id="d-next" hidden>Next word</button></p>
+          <div id="d-progress">
+            <div id="d-strip" lang="en-Dsrt" aria-label="Letters learned"></div>
+            <button type="button" id="d-skip">Skip ahead</button>
+            <button type="button" id="d-reset">Start over</button>
+          </div>
         </div>
       </section>
 

@@ -10,7 +10,18 @@ import {
   untranscribe,
   WORD,
 } from "../src/deseret.ts";
-import { deseretKeys, keyboardMap } from "./keyboard.ts";
+import { deseretKeys, keyboardMap, keyGlyph } from "./keyboard.ts";
+import {
+  align,
+  choose,
+  type Chunk,
+  fresh,
+  known,
+  order,
+  type Progress,
+  splits,
+  unlock,
+} from "./practice.ts";
 
 const notes: Record<Style, string> = {
   modern: "",
@@ -253,149 +264,152 @@ $("#copy").addEventListener("click", async (e) => {
   setTimeout(() => button.textContent = "Copy", 1500);
 });
 
-// Practice: one question at a time, on the letters of the chosen lesson.
-// ponytail: questions are random and the score lasts until reload. Keep the
-// score in localStorage, or ask missed letters more often, if this gets used.
-const words =
-  `cat sun ship moon bread honey light school thing mountain bed dog fish tree
-book hand rain snow milk green red blue mouse road boat sheep cheese jump king
-queen ring song think this that mother father sister brother water river bird
-horse garden apple table chair window happy seven three five nine night day
-sweet voice boy toy few music measure zoo yes wish`.split(/\s+/);
-const lessonPick = $<HTMLSelectElement>("#lesson");
-lessonPick.innerHTML = [...lessons.map((l) => l.name), "Everything"]
-  .map((name, i) => `<option value="${i}">${name}</option>`).join("");
-const pick = <T>(from: T[]) => from[Math.floor(Math.random() * from.length)];
-const shuffle = <T>(xs: T[]) =>
-  xs.map((x) => [Math.random(), x] as const).sort((a, b) => a[0] - b[0])
-    .map(([, x]) => x);
-const spellOne = (word: string) =>
-  transcribe(word.toLowerCase(), dict, style()).out;
-let right = 0, asked = 0, last = "";
+// Practice: spell one word at a time. The sounds learned so far are boxes to
+// fill with Deseret; the rest of the word stays in Latin until its letters
+// come into play.
+const drill = $("#drill"), wordRow = $("#d-word"), next = $("#d-next");
+const STORE = "dualwrit-practice";
+let progress: Progress = fresh();
+try {
+  progress = { ...progress, ...JSON.parse(localStorage.getItem(STORE)!) };
+} catch { /* nothing saved, or storage is off: start from the beginning */ }
+const save = () => {
+  try {
+    localStorage.setItem(STORE, JSON.stringify(progress));
+  } catch { /* practice still works, it just isn't remembered */ }
+};
+const upper = (g: string) => String.fromCodePoint(g.codePointAt(0)! - 0x28);
 
-function ask() {
-  const n = +lessonPick.value;
-  const used = (l: Letter) => l.absent !== style();
-  const mine = (lessons[n]?.letters ?? alphabet).filter(used);
-  // Whole words wait until every letter in them has been taught.
-  const taught = new Set(
-    lessons.slice(0, n + 1).flatMap((l) => l.letters).map((l) =>
-      lowercase(l.glyph)
-    ),
+let letters: string[] = []; // the chosen style's letters, in teaching order
+let pool: Chunk[][] = []; // the words that line up in the chosen style
+let word: Chunk[] = [];
+let at = 0; // the chunk being spelled, or -1 once the word is done
+let misses = 0;
+let arrived: string | undefined; // a letter that has just come into play
+
+const inPlay = (letter: string) => letters.indexOf(letter) < progress.n;
+const nextBox = (from: number) =>
+  word.findIndex((c, i) => i >= from && inPlay(c.letter));
+
+function draw() {
+  const done = at < 0;
+  const english = word.map((c) => c.latin).join("");
+  wordRow.innerHTML = word.map((c, i) => {
+    if (!inPlay(c.letter)) return `<span class="chunk">${c.latin}</span>`;
+    const here = i === at, shown = done || i < at || (here && misses > 1);
+    return `<span class="chunk"><span lang="en-Dsrt" class="box${
+      here ? " here" : ""
+    }${here && misses === 1 ? " miss" : ""}${
+      here && misses > 1 ? " told" : ""
+    }">${shown ? c.letter : ""}</span><small>${c.latin}</small></span>`;
+  }).join("") + speaker(english);
+  wordRow.setAttribute(
+    "aria-label",
+    done
+      ? `${english}, spelled`
+      : `Spell ${english}. Now the ${word[at].latin}.`,
   );
-  const fresh = new Set(mine.map((l) => lowercase(l.glyph)));
-  const ready = words.filter((w) => {
-    const letters = [...spellOne(w)];
-    return letters.every((c) => taught.has(c)) &&
-      letters.some((c) => fresh.has(c));
-  });
-
-  let kind: string, letter: Letter, word: string, id: string;
-  do {
-    kind = pick([
-      "letter",
-      "sound",
-      ...(ready.length > 3 ? ["write", "read"] : []),
-    ]);
-    letter = pick(mine);
-    word = pick(ready);
-    id = kind + (kind === "write" || kind === "read" ? word : letter.glyph);
-  } while (id === last); // not the same question twice running
-  last = id;
-  const spelled = word && spellOne(word);
-
-  const show = $("#q-show"), answer = $("#q-answer"), result = $("#q-result");
-  const next = $<HTMLButtonElement>("#q-next");
-  const inQuiz = $("#quiz").contains(document.activeElement);
-  result.textContent = "";
-  next.hidden = true;
-  const done = (ok: boolean, correction: string) => {
-    asked++;
-    if (ok) right++;
-    result.textContent = ok ? "Right." : `Not quite. ${correction}`;
-    result.className = ok ? "right" : "wrong";
-    $("#q-score").textContent = `${right} of ${asked} right`;
-    next.hidden = false;
-    next.focus();
-  };
-
-  if (kind === "letter" || kind === "sound") {
-    const options = shuffle([
-      letter,
-      ...shuffle(mine.filter((l) => l !== letter)).slice(0, 3),
-    ]);
-    const marked = (l: Letter) => mark(l.word, l.part);
-    const glyph = (l: Letter) => `<span lang="en-Dsrt">${l.glyph}</span>`;
-    $("#q-prompt").textContent = kind === "letter"
-      ? "Which letter makes the marked sound?"
-      : "Which word has this letter's sound?";
-    show.innerHTML = kind === "letter"
-      ? `${marked(letter)} ${speaker(letter.word)}`
-      : glyph(letter);
-    answer.innerHTML = options.map((l) =>
-      `<button type="button" class="opt">${
-        kind === "letter" ? glyph(l) : marked(l)
-      }</button>`
-    ).join("");
-    const buttons = [...answer.querySelectorAll("button")];
-    buttons.forEach((button, i) =>
-      button.addEventListener("click", () => {
-        for (const b of buttons) b.disabled = true;
-        buttons[options.indexOf(letter)].classList.add("right");
-        if (options[i] !== letter) button.classList.add("wrong");
-        done(
-          options[i] === letter,
-          `${letter.glyph} is the ${sound(letter.glyph)}.`,
-        );
-      })
-    );
-    if (inQuiz) buttons[0].focus();
-    return;
-  }
-
-  // Whole words: write the Deseret for an English word, or read one back.
-  const write = kind === "write";
-  $("#q-prompt").textContent = write
-    ? "Write this word in Deseret."
-    : "What English word is this?";
-  show.innerHTML = write
-    ? `${word} ${speaker(word)}`
-    : `<span lang="en-Dsrt">${spelled}</span>`;
-  answer.innerHTML = `<div id="q-field" role="textbox" aria-label="Your answer"
-      contenteditable="plaintext-only" spellcheck="false" ${
-    write ? 'lang="en-Dsrt"' : 'autocapitalize="off"'
-  }></div><button type="button">Check</button>`;
-  const field = $("#q-field"), check = answer.querySelector("button")!;
-  if (write) {
-    deseretKeys(field);
-    answer.append(keyboardMap(field, sound));
-  }
-  const submit = () => {
-    const typed = field.textContent!.trim();
-    if (!typed) return;
-    field.contentEditable = "false";
-    check.disabled = true;
-    done(
-      // Any word that sounds the same is right: "to" for "two".
-      write ? typed.toLowerCase() === spelled : spellOne(typed) === spelled,
-      write ? `${word} is ${spelled}.` : `It says "${word}".`,
-    );
-  };
-  check.addEventListener("click", submit);
-  field.addEventListener("keydown", (e) => {
-    if (e.key !== "Enter") return;
-    e.preventDefault();
-    submit();
-  });
-  if (inQuiz) field.focus();
+  $("#d-note").innerHTML = arrived
+    ? `A new letter: <span lang="en-Dsrt">${arrived}</span> is the ${
+      sound(upper(arrived))
+    }.`
+    : "";
+  $("#d-hint").innerHTML = done
+    ? `${english} in full: <span lang="en-Dsrt">${
+      word.map((c) => c.letter).join("")
+    }</span>`
+    : misses > 1
+    ? `It is the ${sound(upper(word[at].letter))}.`
+    : misses
+    ? "Not that one. Try another."
+    : "";
+  next.hidden = !done;
+  const playing = letters.slice(0, progress.n);
+  $("#d-keys").innerHTML = playing.map((l) =>
+    `<button type="button" lang="en-Dsrt" data-letter="${l}"
+      aria-label="${sound(upper(l))}">${l}</button>`
+  ).join("");
+  $("#d-strip").innerHTML = letters.map((l, i) =>
+    `<span class="${
+      known(progress, l) ? "known" : i < progress.n ? "play" : ""
+    }" title="${sound(upper(l))}">${l}</span>`
+  ).join("");
+  $<HTMLButtonElement>("#d-skip").disabled = progress.n >= letters.length;
 }
-$("#q-next").addEventListener("click", ask);
-lessonPick.addEventListener("change", ask);
+
+function type(letter: string) {
+  if (at < 0) return;
+  const want = word[at].letter;
+  if (letter !== want) {
+    misses++;
+    return draw();
+  }
+  // Only a first-try spelling counts toward knowing the letter.
+  if (!misses) progress.count[want] = (progress.count[want] ?? 0) + 1;
+  misses = 0;
+  at = nextBox(at + 1);
+  if (at < 0) arrived = unlock(progress, letters);
+  save();
+  draw();
+  if (at < 0) next.focus();
+}
+
+function newWord() {
+  const here = drill.contains(document.activeElement);
+  word = choose(pool, progress, letters, word);
+  at = nextBox(0);
+  misses = 0;
+  draw();
+  if (here) wordRow.focus();
+}
+
+wordRow.addEventListener("keydown", (e) => {
+  if (e.metaKey || (e.ctrlKey && !e.altKey)) return;
+  const glyph = keyGlyph(e);
+  if (!glyph) return;
+  e.preventDefault();
+  type(lowercase(glyph));
+});
+// Keep the caret on the word when a key is pressed with the mouse.
+$("#d-keys").addEventListener("mousedown", (e) => e.preventDefault());
+$("#d-keys").addEventListener("click", (e) => {
+  const letter = (e.target as Element).closest<HTMLElement>("button")?.dataset
+    .letter;
+  if (letter) type(letter);
+});
+next.addEventListener("click", () => {
+  arrived = undefined;
+  newWord();
+});
+$("#d-skip").addEventListener("click", () => {
+  arrived = letters[progress.n++];
+  save();
+  newWord();
+});
+$("#d-reset").addEventListener("click", () => {
+  if (!confirm("Forget the letters you have learned and start over?")) return;
+  progress = fresh();
+  arrived = undefined;
+  save();
+  newWord();
+});
+
+// The chosen style decides which letters exist and how each word is spelled.
+function startPractice() {
+  const absent = new Set(
+    alphabet.filter((l) => l.absent === style()).map((l) => lowercase(l.glyph)),
+  );
+  letters = order.filter((l) => !absent.has(l));
+  pool = splits.map((s) =>
+    align(s, transcribe(s.replaceAll("|", ""), dict, style()).out)
+  ).filter((w) => w !== null);
+  newWord();
+}
 
 function refresh() {
   $("#style-note").textContent = notes[style()];
   update();
   spellExamples();
-  ask();
+  startPractice();
 }
 refresh();
