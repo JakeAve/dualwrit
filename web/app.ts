@@ -297,7 +297,7 @@ function draw() {
   wordRow.innerHTML = word.map((c, i) => {
     if (!inPlay(c.letter)) return `<span class="chunk">${c.latin}</span>`;
     const here = i === at, shown = done || i < at || (here && misses > 1);
-    return `<span class="chunk"><span lang="en-Dsrt" class="box${
+    return `<span class="chunk"><span lang="en-Dsrt" class="slot${
       here ? " here" : ""
     }${here && misses === 1 ? " miss" : ""}${
       here && misses > 1 ? " told" : ""
