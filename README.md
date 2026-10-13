@@ -1,12 +1,15 @@
 # dualwrit
 
-Writes English in other alphabets. The first one is the
+Writes English in other alphabets. There are two so far: the
 [Deseret alphabet](https://en.wikipedia.org/wiki/Deseret_alphabet), a phonetic
-alphabet for English made in Utah in the 1850s.
+alphabet for English made in Utah in the 1850s, and the runes Tolkien used in
+_The Hobbit_.
 
-The site is a landing page and one folder per script. Deseret's page teaches the
-letters and has a side-by-side translator:
-https://jakeave.github.io/dualwrit/deseret/
+The site is a landing page and one folder per script. Each script's page teaches
+the letters and has a side-by-side translator:
+
+- Deseret: https://jakeave.github.io/dualwrit/deseret/
+- Hobbit runes: https://jakeave.github.io/dualwrit/runes/
 
 ## How it works
 
@@ -32,6 +35,13 @@ I read{past} books.
 Each such word has named readings (`read`: `present`, `past`; `lead`: `guide`,
 `metal`; `record`: `noun`, `verb`). The command line lists any it had to guess,
 and the site underlines them so you can press to switch.
+
+The Hobbit runes are written by spelling, not sound (`src/runes.ts`). There is
+no dictionary: each letter becomes its rune, and a two-letter rune (eight of
+them, such as _th_, _ng_ and _sh_) wins over the two single letters it covers,
+by greedy longest match. It cannot tell where a syllable ends, so a pair that
+falls across one still gets the two-letter rune ("pothole" is written with the
+_th_ rune).
 
 ## Use
 
@@ -61,12 +71,14 @@ const { out, misses, choices, warnings } = transcribe(
 ```
 src/deseret.ts       letter tables, styles, suffix rules, transcribe()
 src/heteronyms.ts    two-reading words: readings and context rules
+src/runes.ts         Hobbit runes: letter table, transcribe(), untranscribe()
 src/*_test.ts        tests
 cli.ts               command line
 web/                 the site: landing page, site.css, the shared shell app.ts
                      (mount(script)), and script.ts (the Script and Engine types)
 web/deseret/         Deseret: script.ts (its definition), main.ts (bundle entry),
                      index.html and its share image
+web/runes/           Hobbit runes: the same files as web/deseret/
 data/cmudict.dict    pronouncing dictionary
 scripts/score.ts     agreement with the 1869 text (needs corpus/, see below)
 samples/             chapters of three public-domain books in Deseret
@@ -92,7 +104,7 @@ browser, so the site is fully static.
 To add a script, give it a folder under `web/` with a `Script` definition, a
 `main.ts` that calls `mount`, and a page, then add a bundle command for it to
 `build` in `deno.json`. `build` bundles `web/deseret/main.ts` to
-`dist/deseret/app.js`.
+`dist/deseret/app.js` and `web/runes/main.ts` to `dist/runes/app.js`.
 
 ## The 1869 score
 
