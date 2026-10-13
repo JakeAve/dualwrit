@@ -80,9 +80,10 @@ deno task check    # format, lint, type-check
 deno task build    # writes the static site to dist/
 ```
 
-The share image (`web/deseret/og.png`) and icons in `web/` are rendered from the
-HTML in `scripts/images/` with headless Chrome at 1200x630 and 512x512, then the
-icon is scaled down with `sips`. Re-render them if the palette or title changes.
+The share images (`web/deseret/og.png` and `web/runes/og.png`) and icons in
+`web/` are rendered from the HTML in `scripts/images/` (`og.html`,
+`og-runes.html`) with headless Chrome at 1200x630 and 512x512, then the icon is
+scaled down with `sips`. Re-render them if the palette or title changes.
 
 Pushing to `main` runs the checks and tests, builds, and publishes `dist/` to
 GitHub Pages (`.github/workflows/pages.yml`). The transcriber runs in the
