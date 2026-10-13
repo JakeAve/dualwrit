@@ -36,7 +36,9 @@ export async function mount<S extends string>(script: Script<S>) {
   translator.setAttribute("aria-labelledby", "try");
   translator.innerHTML = `
 <h2 id="try">Write something</h2>
-<p class="lede">Type in either box and the other follows. Choose a spelling style on the right.</p>
+<p class="lede">Type in either box and the other follows.${
+    script.styles.length > 1 ? " Choose a spelling style on the right." : ""
+  }</p>
 
 <div class="boxes">
 <div class="box">

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Dualwrit</title>
     <meta name="description"
-      content="Write English in other alphabets. Start with the Deseret alphabet.">
+      content="Write English in other alphabets: the Deseret alphabet and the runes of The Hobbit.">
     <meta name="theme-color" content="#e8eeec">
     <link rel="icon" type="image/png" sizes="48x48" href="favicon.png">
     <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
@@ -25,14 +25,19 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Noto+Sans+Deseret&family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&display=swap">
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+Deseret&family=Noto+Sans+Runic&family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&display=swap">
     <link rel="stylesheet" href="site.css">
     <style>
     :root {
       --script: "Noto Sans Deseret", "Apple Symbols", "Segoe UI Historic", sans-serif;
     }
+    .cards {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.25rem;
+    }
     .card {
-      display: block;
+      flex: 1 1 16rem;
       max-width: 20rem;
       padding: 1.25rem 1.5rem;
       background: var(--sheet);
@@ -48,6 +53,10 @@
       font-size: 2.6rem;
       line-height: 1.2;
     }
+    .card .d[lang="en-Runr"] {
+      font-family: "Noto Sans Runic", "Segoe UI Historic", "Apple Symbols",
+        sans-serif;
+    }
     </style>
   </head>
   <body>
@@ -56,10 +65,16 @@
         <h1>Dualwrit</h1>
         <p>Write English in other alphabets.</p>
       </header>
-      <a class="card" href="deseret/">
-        <span class="d" lang="en-Dsrt">𐐔𐐯𐑅𐐨𐑉𐐯𐐻</span>
-        The Deseret Alphabet
-      </a>
+      <div class="cards">
+        <a class="card" href="deseret/">
+          <span class="d" lang="en-Dsrt">𐐔𐐯𐑅𐐨𐑉𐐯𐐻</span>
+          The Deseret Alphabet
+        </a>
+        <a class="card" href="runes/">
+          <span class="d" lang="en-Runr">ᚱᚢᚾᛖᛋ</span>
+          Hobbit Runes
+        </a>
+      </div>
     </main>
   </body>
 </html>

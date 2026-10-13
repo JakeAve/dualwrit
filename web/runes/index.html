@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>The Runes of The Hobbit</title>
+    <meta name="description"
+      content="Write English in the runes J.R.R. Tolkien used in The Hobbit. Learn the letters and try a side-by-side translator.">
+    <meta name="theme-color" content="#e8eeec">
+    <link rel="icon" type="image/png" sizes="48x48" href="../favicon.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="../icon-512.png">
+    <link rel="apple-touch-icon" href="../apple-touch-icon.png">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="The Runes of The Hobbit">
+    <meta property="og:description"
+      content="Write English in the runes J.R.R. Tolkien used in The Hobbit. Learn the letters and try a side-by-side translator.">
+    <meta property="og:url" content="https://jakeave.github.io/dualwrit/runes/">
+    <meta property="og:image"
+      content="https://jakeave.github.io/dualwrit/runes/og.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt"
+      content="The Runes of The Hobbit written in runes, above a row of rune tiles with example words.">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+Runic&family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&display=swap">
+    <link rel="stylesheet" href="../site.css">
+    <style>
+    :root {
+      --script: "Noto Sans Runic", "Segoe UI Historic", "Apple Symbols", sans-serif;
+    }
+    /* A longer line than the shared size allows on a phone. */
+    h1 .d {
+      font-size: clamp(1.3rem, 6.6vw, 5.2rem);
+    }
+    </style>
+  </head>
+  <body>
+    <main>
+      <header>
+        <h1>
+          <span class="d" lang="en-Runr"
+            aria-hidden="true">ᚦᛖ ᚱᚢᚾᛖᛋ ᚩᚠ ᚦᛖ ᚻᚩᛒᛒᛁᛏ</span>
+          <span class="said">The Runes of The Hobbit</span>
+        </h1>
+        <p>J.R.R. Tolkien used Anglo-Saxon runes to write modern English in The Hobbit, on Thror's map and on the title page.
+      Here each rune stands in for a letter, so a word is written the way it is spelled, not the way it sounds.</p>
+      </header>
+
+      <section data-mount="translator"></section>
+
+      <section aria-labelledby="letters">
+        <h2 id="letters">The runes</h2>
+        <p
+          class="lede">Each rune stands for the letter marked in its example word.
+      Under each word is how it is written in runes.
+      Press a speaker to hear the word.</p>
+
+        <h3>The letters</h3>
+        <div class="group"
+          data-letters="ᚪ|apple|a ᛒ|bed|b ᚳ|cat|c ᛞ|dog|d ᛖ|egg|e ᚠ|fire|f ᚷ|gold|g ᚻ|hat|h ᛁ|ink|i ᛱ|key|k ᛚ|lamp|l ᛗ|map|m ᚾ|nut|n ᚩ|oak|o ᛈ|pen|p ᚱ|run|r ᛋ|sun|s ᛏ|top|t ᚢ|up|u ᚹ|web|w ᛉ|box|x ᚣ|yes|y ᛣ|zip|z"></div>
+        <p
+          class="lede">Three letters have no rune of their own: ᛁ also writes j, ᚢ also writes v, and q is written as cw.</p>
+
+        <h3>Two letters, one rune</h3>
+        <p
+          class="lede">Some pairs of letters get one rune of their own, wherever the two fall together in a word.</p>
+        <div class="group"
+          data-letters="ᚦ|thin|th ᛝ|sing|ng ᛟ|see|ee ᛠ|eat|ea ᛇ|people|eo ᛥ|stone|st ᛳ|moon|oo ᛲ|ship|sh"></div>
+      </section>
+
+      <section aria-labelledby="read">
+        <h2 id="read">Try reading</h2>
+        <p
+          class="lede">Read each one letter by letter, then press it to check.</p>
+        <ul class="practice"
+          data-words="map|gold|dragon|ring|door|king|stone|three|mountain|treasure"></ul>
+      </section>
+
+      <section data-mount="drill"></section>
+
+      <footer>
+    The conventions are the ones J.R.R. Tolkien used in The Hobbit.
+    Words are spelled letter by letter, not by sound.
+  </footer>
+    </main>
+
+    <script type="module" src="app.js"></script>
+  </body>
+</html>

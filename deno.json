@@ -1,7 +1,7 @@
 {
   "tasks": {
     "dev": "deno task build && deno run --allow-net --allow-read jsr:@std/http@1/file-server --port 8131 dist",
-    "build": "rm -rf dist && mkdir -p dist/deseret && cp web/index.html web/site.css web/favicon.png web/icon-512.png web/apple-touch-icon.png data/cmudict.dict dist/ && cp web/deseret/index.html web/deseret/og.png dist/deseret/ && deno bundle --platform browser --minify -o dist/deseret/app.js web/deseret/main.ts",
+    "build": "rm -rf dist && mkdir -p dist/deseret dist/runes && cp web/index.html web/site.css web/favicon.png web/icon-512.png web/apple-touch-icon.png data/cmudict.dict dist/ && cp web/deseret/index.html web/deseret/og.png dist/deseret/ && deno bundle --platform browser --minify -o dist/deseret/app.js web/deseret/main.ts && cp web/runes/index.html web/runes/og.png dist/runes/ && deno bundle --platform browser --minify -o dist/runes/app.js web/runes/main.ts",
     "test": "deno test --allow-read",
     "check": "deno fmt --check && deno lint && deno check",
     "deseret": "deno run --allow-read cli.ts",

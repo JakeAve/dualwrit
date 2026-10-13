@@ -61,9 +61,13 @@ export function keyboard(
       setTimeout(() => hold(option));
       if (e.metaKey || (e.ctrlKey && !e.altKey)) return;
       const glyph = keyGlyph(e);
-      if (!glyph) return;
+      // A key the script gives no letter at all types nothing here, rather
+      // than its Latin letter.
+      if (!glyph && byCode.get(e.code)?.length !== 0) return;
       e.preventDefault();
-      type(box, glyph, e.shiftKey !== e.getModifierState("CapsLock"));
+      if (glyph) {
+        type(box, glyph, e.shiftKey !== e.getModifierState("CapsLock"));
+      }
     });
   }
 
