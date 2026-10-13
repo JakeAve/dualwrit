@@ -62,7 +62,8 @@ src/deseret.ts       letter tables, styles, suffix rules, transcribe()
 src/heteronyms.ts    two-reading words: readings and context rules
 src/*_test.ts        tests
 cli.ts               command line
-web/                 the site: index.html and app.ts (bundled for the browser)
+web/                 the site: landing page, site.css, app.ts (bundled for the browser)
+web/deseret/         the Deseret page and its share image
 data/cmudict.dict    pronouncing dictionary
 scripts/score.ts     agreement with the 1869 text (needs corpus/, see below)
 samples/             chapters of three public-domain books in Deseret
@@ -76,9 +77,9 @@ deno task check    # format, lint, type-check
 deno task build    # writes the static site to dist/
 ```
 
-The share image and icons in `web/` are rendered from the HTML in
-`scripts/images/` with headless Chrome at 1200x630 and 512x512, then the icon is
-scaled down with `sips`. Re-render them if the palette or title changes.
+The share image (`web/deseret/og.png`) and icons in `web/` are rendered from the
+HTML in `scripts/images/` with headless Chrome at 1200x630 and 512x512, then the
+icon is scaled down with `sips`. Re-render them if the palette or title changes.
 
 Pushing to `main` runs the checks and tests, builds, and publishes `dist/` to
 GitHub Pages (`.github/workflows/pages.yml`). The transcriber runs in the

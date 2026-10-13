@@ -130,7 +130,7 @@ practice.innerHTML = practice.dataset.words!.split("|")
 
 // The dictionary is one 3.6 MB text file; everything waits on it.
 missed.textContent = "Loading the pronouncing dictionary…";
-const response = await fetch("cmudict.dict");
+const response = await fetch("../cmudict.dict");
 if (!response.ok) {
   missed.textContent =
     `Could not load the pronouncing dictionary (${response.status}). Reload to try again.`;

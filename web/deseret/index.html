@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>The Deseret Alphabet</title>
+    <meta name="description"
+      content="Learn the Deseret alphabet and write English by sound. One letter for each sound, with a side-by-side translator.">
+    <meta name="theme-color" content="#e8eeec">
+    <link rel="icon" type="image/png" sizes="48x48" href="../favicon.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="../icon-512.png">
+    <link rel="apple-touch-icon" href="../apple-touch-icon.png">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="The Deseret Alphabet">
+    <meta property="og:description"
+      content="One letter for each sound of English. Learn the letters and write anything by ear.">
+    <meta property="og:url"
+      content="https://jakeave.github.io/dualwrit/deseret/">
+    <meta property="og:image"
+      content="https://jakeave.github.io/dualwrit/deseret/og.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt"
+      content="The Deseret Alphabet written in Deseret letters, above a row of letter tiles with example words.">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+Deseret&family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&display=swap">
+    <link rel="stylesheet" href="../site.css">
+    <style>
+    :root {
+      --script: "Noto Sans Deseret", "Apple Symbols", "Segoe UI Historic", sans-serif;
+    }
+    </style>
+  </head>
+  <body>
+    <main>
+      <header>
+        <h1>
+          <span class="d" lang="en-Dsrt"
+            aria-hidden="true">𐐜 𐐔𐐯𐑅𐐨𐑉𐐯𐐻 𐐈𐑊𐑁𐐲𐐺𐐯𐐻</span>
+          <span class="said">The Deseret Alphabet</span>
+        </h1>
+        <p>A way of writing English with one letter for each sound, made in Utah in the 1850s.
+      There are no silent letters and no spelling rules to memorize: if you can say a word, you can write it.</p>
+      </header>
+
+      <section aria-labelledby="try">
+        <h2 id="try">Write something</h2>
+        <p
+          class="lede">Type in either box and the other follows. Choose a spelling style on the right.</p>
+
+        <div class="boxes">
+          <div class="box">
+            <label for="in">English</label>
+            <textarea id="in"
+              spellcheck="true">To be or not to be, that is the question. Which of you knows the way to the people of the valley?</textarea>
+          </div>
+          <div class="box">
+            <div class="label">
+              <span id="out-label">Deseret</span>
+              <fieldset class="styles">
+                <legend class="sr-only">Spelling style</legend>
+                <label><input type="radio" name="style" value="modern" checked><span>Modern</span></label>
+                <label><input type="radio" name="style" value="abbreviated"><span>Abbreviated</span></label>
+                <label><input type="radio" name="style" value="1869"><span>1869</span></label>
+              </fieldset>
+              <button type="button" id="copy">Copy</button>
+            </div>
+            <div id="out" lang="en-Dsrt" contenteditable="plaintext-only"
+              role="textbox" aria-multiline="true" aria-labelledby="out-label"
+              spellcheck="false"></div>
+          </div>
+        </div>
+        <p id="style-note" aria-live="polite"></p>
+        <p id="choice-note"
+          hidden>Underlined words can be said two ways. Press one to switch it.
+      Your choice is written into the English as a tag, like <code>read{past}</code>; a dotted underline is a guess.</p>
+        <p id="misses" aria-live="polite"></p>
+
+        <div id="keys">
+          <p>Use your keyboard to type Deseret letters, hold (Alt/Option) for
+        alternate letters</p>
+          <div id="keymap"></div>
+        </div>
+      </section>
+
+      <section aria-labelledby="letters">
+        <h2 id="letters">The letters</h2>
+        <p
+          class="lede">Each letter makes the sound marked in its example word, every time. A capital is the same shape drawn larger.
+      Under each word is how it is spelled in the style chosen above.
+      Press a speaker to hear the word.</p>
+
+        <h3>Long vowels</h3>
+        <div class="group"
+          data-letters="𐐀|eat|ea 𐐁|ate|a 𐐂|art|a 𐐃|law|aw 𐐄|oat|oa 𐐅|ooze|oo"></div>
+
+        <h3>Short vowels</h3>
+        <div class="group"
+          data-letters="𐐆|it|i 𐐇|bet|e 𐐈|at|a 𐐉|hot|o 𐐊|but|u 𐐋|book|oo"></div>
+
+        <h3>Gliding vowels</h3>
+        <p
+          class="lede">Two vowel sounds run together. The 1869 printers dropped the last two letters and spelled those sounds with two letters each.</p>
+        <div class="group"
+          data-letters="𐐌|ice|i 𐐍|owl|ow 𐐦|oil|oi|1869 𐐧|few|ew|1869"></div>
+
+        <h3>Consonants in pairs</h3>
+        <p
+          class="lede">Each pair uses the same mouth shape: first as a whisper, then with your voice on.</p>
+        <div class="pairs"
+          data-pairs="𐐑|pie|p 𐐒|bee|b 𐐓|tea|t 𐐔|day|d 𐐕|cheese|ch 𐐖|joy|j 𐐗|key|k 𐐘|go|g 𐐙|fee|f 𐐚|vow|v 𐐛|thin|th 𐐜|this|th 𐐝|see|s 𐐞|zoo|z 𐐟|she|sh 𐐠|measure|s"></div>
+
+        <h3>The rest</h3>
+        <div class="group"
+          data-letters="𐐎|wet|w 𐐏|yes|y 𐐐|hat|h 𐐡|row|r 𐐢|low|l 𐐣|me|m 𐐤|no|n 𐐥|sing|ng"></div>
+      </section>
+
+      <section aria-labelledby="read">
+        <h2 id="read">Try reading</h2>
+        <p class="lede">Sound each one out, then press it to check.</p>
+        <ul class="practice"
+          data-words="cat|sun|ship|moon|bread|honey|light|school|thing|mountain"></ul>
+      </section>
+
+      <section aria-labelledby="practice">
+        <h2 id="practice">Practice</h2>
+        <p class="lede">Spell one word at a time. The boxes are the sounds whose
+      letters you have met: type the Deseret letter for each. The rest of the
+      word stays in Latin until its letters arrive, a new one each time you
+      have the hang of the last.</p>
+        <div id="drill">
+          <p id="d-note" aria-live="polite"></p>
+          <div id="d-word" tabindex="0" role="group"></div>
+          <p id="d-hint" aria-live="polite"></p>
+          <div id="d-keys"></div>
+          <p><button type="button" id="d-next" hidden>Next word</button></p>
+          <div id="d-progress">
+            <div id="d-strip" lang="en-Dsrt" aria-label="Letters learned"></div>
+            <button type="button" id="d-skip">Skip ahead</button>
+            <button type="button" id="d-reset">Start over</button>
+          </div>
+        </div>
+      </section>
+
+      <footer>
+    Pronunciations come from the CMU Pronouncing Dictionary, which is American English.
+    The 1869 style follows the spelling of the Deseret Book of Mormon printed that year.
+  </footer>
+    </main>
+
+    <script type="module" src="app.js"></script>
+  </body>
+</html>

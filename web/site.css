@@ -1,0 +1,694 @@
+/* Salt-flat paper, blue-black ink, honey for anything you can press
+   ("Deseret" is the Book of Mormon word for honeybee). */
+:root {
+  --salt: #e8eeec;
+  --sheet: #f8faf9;
+  --ink: #1c2742;
+  --sage: #5f7566;
+  --rule: #b9c6c0;
+  --honey: #c58a17;
+  --honey-wash: #f6e6bf;
+  --wrong: #a13d2d;
+  --latin: "Old Standard TT", "Iowan Old Style", Georgia, serif;
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  background: var(--salt);
+  color: var(--ink);
+  font: 1.125rem/1.6 var(--latin);
+}
+main {
+  max-width: 66rem;
+  margin: 0 auto;
+  padding: 0 1.25rem 5rem;
+}
+.d {
+  font-family: var(--script);
+}
+:focus-visible {
+  outline: 3px solid var(--honey);
+  outline-offset: 2px;
+}
+textarea:focus-visible,
+#out:focus-visible {
+  outline-offset: -3px;
+} /* stay inside the box rules */
+
+/* Masthead: the name in its own letters is the picture. */
+header {
+  padding: 3.5rem 0 2rem;
+}
+h1 {
+  margin: 0;
+  font-weight: 400;
+  line-height: 1.1;
+}
+h1 .d {
+  display: block;
+  font-size: clamp(2.2rem, 7.5vw, 5.2rem);
+  letter-spacing: .01em;
+}
+h1 .said {
+  display: block;
+  margin-top: .6rem;
+  font-size: 1.35rem;
+  font-style: italic;
+  color: var(--sage);
+}
+header p {
+  max-width: 38rem;
+  margin: 1.25rem 0 0;
+}
+
+h2 {
+  font-size: 1.9rem;
+  font-weight: 400;
+  line-height: 1.2;
+  margin: 4rem 0 .5rem;
+}
+h3 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin: 2.25rem 0 .25rem;
+}
+.lede {
+  max-width: 38rem;
+  margin: 0 0 1.25rem;
+}
+
+/* Style switch */
+fieldset {
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+.styles {
+  display: inline-flex;
+  border: 1.5px solid var(--ink);
+  border-radius: 2rem;
+  overflow: hidden;
+  background: var(--sheet);
+  font-style: normal;
+  color: var(--ink);
+  font-size: 1rem;
+  margin-left: auto;
+}
+.styles label {
+  cursor: pointer;
+}
+.styles input {
+  position: absolute;
+  opacity: 0;
+}
+.styles label {
+  flex: 1;
+  text-align: center;
+}
+.styles span {
+  display: block;
+  padding: .1rem .8rem;
+  white-space: nowrap;
+}
+.styles label + label span {
+  border-left: 1.5px solid var(--ink);
+}
+.styles input:checked + span {
+  background: var(--ink);
+  color: var(--sheet);
+}
+.styles input:focus-visible + span {
+  outline: 3px solid var(--honey);
+  outline-offset: -3px;
+}
+#style-note {
+  max-width: 38rem;
+  margin: .75rem 0 0;
+  color: var(--sage);
+}
+
+/* Translator */
+.boxes {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border: 1.5px solid var(--ink);
+  background: var(--sheet);
+}
+.box {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.box + .box {
+  border-left: 1.5px solid var(--ink);
+}
+.box > label,
+.box > .label {
+  min-height: 3.8rem;
+  padding: .5rem 1rem;
+  border-bottom: 1px solid var(--rule);
+  font-style: italic;
+  color: var(--sage);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .5rem 1rem;
+}
+textarea,
+#out {
+  flex: 1;
+  min-height: 15rem;
+  margin: 0;
+  padding: 1rem;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  line-height: 1.7;
+  resize: vertical;
+}
+#out {
+  font-family: var(--script);
+  font-size: 1.3rem;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+button {
+  font: inherit;
+  font-style: normal;
+  color: var(--ink);
+  cursor: pointer;
+  background: var(--honey-wash);
+  border: 1.5px solid var(--honey);
+  border-radius: 2rem;
+  padding: .1rem .9rem;
+}
+/* Ink on honey: pale text there is under 3:1. */
+@media (hover: hover) {
+  button:hover {
+    background: var(--honey);
+  }
+}
+button:active {
+  background: var(--honey);
+}
+#misses {
+  margin: .25rem 0 0;
+  color: var(--sage);
+  min-height: 1.6em;
+  white-space: pre-line;
+}
+/* A word that can be said two ways. Dotted = we guessed; solid = settled. */
+#out .choice {
+  font: inherit;
+  color: inherit;
+  background: none;
+  padding: 0;
+  min-height: 0;
+  border: 0;
+  border-bottom: 2px solid var(--honey);
+  border-radius: 0;
+}
+#out .choice.guess {
+  border-bottom-style: dotted;
+  background: var(--honey-wash);
+}
+#out .choice:hover {
+  background: var(--honey-wash);
+  color: inherit;
+}
+/* Speaker buttons: hear the example word. Hidden where the browser can't speak. */
+.letter {
+  position: relative;
+}
+.say {
+  position: absolute;
+  top: .45rem;
+  right: .45rem;
+  display: grid;
+  place-items: center;
+  width: 2.1rem;
+  height: 2.1rem;
+  min-height: 0;
+  padding: 0;
+  border-radius: 50%;
+}
+.practice .say,
+#drill .say {
+  position: static;
+  display: inline-grid;
+  vertical-align: middle;
+  margin-left: .4rem;
+}
+.no-speech .say {
+  display: none;
+}
+@media (pointer: coarse) {
+  .say {
+    width: 2.75rem;
+    height: 2.75rem;
+    top: .2rem;
+    right: .2rem;
+  }
+}
+#choice-note {
+  max-width: 38rem;
+  margin: .25rem 0 0;
+  color: var(--sage);
+}
+#choice-note code {
+  font-family: inherit;
+  font-style: italic;
+}
+
+/* Letter chart. Grouping is the lesson: pairs sit together. */
+.group {
+  display: grid;
+  gap: .6rem;
+  grid-template-columns: repeat(auto-fill, minmax(8.5rem, 1fr));
+}
+.pairs {
+  display: grid;
+  gap: .6rem;
+  grid-template-columns: repeat(auto-fill, minmax(17.6rem, 1fr));
+}
+.pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  background: var(--sheet);
+  border: 1px solid var(--rule);
+}
+.pair .letter {
+  border: 0;
+}
+.pair .letter + .letter {
+  border-left: 1px dashed var(--rule);
+}
+.letter {
+  background: var(--sheet);
+  border: 1px solid var(--rule);
+  padding: .7rem .8rem .8rem;
+}
+.letter .glyph {
+  font-family: var(--script);
+  font-size: 2.6rem;
+  line-height: 1.1;
+  display: flex;
+  align-items: baseline;
+  gap: .35rem;
+}
+.letter .glyph small {
+  font-size: 1.5rem;
+  color: var(--sage);
+}
+.letter .word {
+  margin-top: .2rem;
+}
+.letter .word b {
+  color: var(--honey);
+  font-weight: 700;
+}
+.letter .spelled {
+  font-family: var(--script);
+  color: var(--sage);
+  min-height: 1.6em;
+}
+.letter.unused {
+  opacity: .45;
+}
+.letter .absent {
+  display: none;
+  font-style: italic;
+  font-size: .95rem;
+}
+.letter.unused .absent {
+  display: block;
+}
+.letter.unused .spelled {
+  display: none;
+}
+
+/* Reading practice */
+.practice {
+  display: grid;
+  gap: .6rem;
+  grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+.practice details {
+  background: var(--sheet);
+  border: 1px solid var(--rule);
+}
+.practice summary {
+  cursor: pointer;
+  padding: .7rem 1rem;
+  font-family: var(--script);
+  font-size: 1.7rem;
+  list-style: none;
+  overflow-wrap: anywhere;
+}
+.practice summary::-webkit-details-marker {
+  display: none;
+}
+.practice details[open] summary {
+  border-bottom: 1px dashed var(--rule);
+}
+.practice p {
+  margin: 0;
+  padding: .6rem 1rem .8rem;
+}
+
+/* Keyboard map: each key is a small Option letter over its main letter. */
+#keys {
+  max-width: 38rem;
+  margin: 1rem auto 0;
+  text-align: center;
+}
+#keys p {
+  margin: .25rem 0 .75rem;
+  color: var(--sage);
+}
+.keys {
+  display: grid;
+  gap: .3rem;
+}
+.keyrow {
+  display: flex;
+  justify-content: center;
+  gap: .3rem;
+}
+.key {
+  flex: 0 1 3.3rem;
+  display: grid;
+  grid-template-rows: 1.5rem 2.4rem;
+  background: var(--sheet);
+  border: 1px solid var(--rule);
+  border-radius: .3rem;
+  overflow: hidden;
+}
+.key button {
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  font-family: var(--script);
+  font-size: 1.5rem;
+  line-height: 1;
+}
+.key button:hover,
+.key button:active {
+  background: var(--honey-wash);
+  color: var(--ink);
+}
+.key .alt {
+  font-size: 1rem;
+  color: var(--sage);
+  border-bottom: 1px dashed var(--rule);
+}
+.key .main {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .25rem;
+}
+.key small {
+  font: .8rem var(--latin);
+  color: var(--sage);
+}
+
+.keyrow.touch {
+  display: none;
+}
+.touch .key {
+  grid-template-rows: 2.6rem;
+}
+.touch .key:nth-child(3) {
+  flex: 1 1 9rem; /* space bar */
+}
+.touch button {
+  font-family: var(--latin);
+}
+.keys.shift [data-act="shift"] {
+  background: var(--honey);
+}
+/* Touch screens: the phone's keyboard is held down in a Deseret box, so
+   this one takes its place at the bottom of the screen. */
+@media (pointer: coarse) {
+  .keyrow.touch {
+    display: flex;
+  }
+  .keys.docked {
+    position: fixed;
+    z-index: 1;
+    inset: auto 0 0;
+    padding: .4rem .25rem calc(.4rem + env(safe-area-inset-bottom));
+    background: var(--salt);
+    border-top: 1.5px solid var(--ink);
+  }
+  .keys.docked .key {
+    flex: 1 1 0;
+  }
+  .keys.docked .key:has(.main) {
+    grid-template-rows: 1.9rem 2.6rem;
+  }
+  /* Room to scroll the box clear of the keyboard. */
+  body:has(.keys.docked) {
+    padding-bottom: 19rem;
+  }
+}
+
+/* Spelling practice */
+#drill {
+  max-width: 38rem;
+  margin-top: 1rem;
+  padding: 1rem 1.25rem;
+  background: var(--sheet);
+  border: 1.5px solid var(--ink);
+}
+#drill p {
+  margin: 0;
+  min-height: 1.6em;
+}
+#drill [lang] {
+  font-family: var(--script);
+}
+#d-note {
+  color: var(--sage);
+}
+#d-note [lang] {
+  font-size: 1.4em;
+  color: var(--ink);
+}
+#d-word {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: .5rem;
+  margin: .75rem 0 .5rem;
+  font-size: 2.2rem;
+  line-height: 3.5rem;
+}
+.chunk {
+  display: grid;
+  justify-items: center;
+}
+.chunk small {
+  font-size: 1rem;
+  line-height: 1.4;
+  color: var(--sage);
+}
+.slot {
+  width: 3.5rem;
+  height: 3.5rem;
+  text-align: center;
+  background: var(--salt);
+  border: 1.5px solid var(--rule);
+}
+.slot.here {
+  border-color: var(--ink);
+}
+#d-word:focus-visible {
+  outline: none;
+}
+#d-word:focus-visible .here {
+  outline: 3px solid var(--honey);
+  outline-offset: 2px;
+}
+.slot.miss {
+  border-color: var(--wrong);
+}
+.slot.told {
+  color: var(--sage);
+  border-style: dashed;
+}
+#d-keys {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .4rem;
+  margin: .75rem 0;
+}
+#d-keys button {
+  min-width: 2.8rem;
+  padding: .2rem .5rem;
+  font-size: 1.5rem;
+}
+#d-progress {
+  margin-top: 1rem;
+  padding-top: .75rem;
+  border-top: 1px solid var(--rule);
+}
+#d-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .25rem;
+  margin-bottom: .75rem;
+}
+#d-strip span {
+  width: 1.9rem;
+  line-height: 1.9rem;
+  text-align: center;
+  color: var(--rule);
+  border: 1px solid var(--rule);
+}
+#d-strip .play {
+  color: var(--ink);
+  border-color: var(--ink);
+}
+#d-strip .known {
+  color: var(--sheet);
+  background: var(--sage);
+  border-color: var(--sage);
+}
+#d-progress button {
+  font-size: 1rem;
+}
+#drill button:disabled {
+  opacity: .5;
+  pointer-events: none;
+}
+
+footer {
+  margin-top: 4rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--rule);
+  color: var(--sage);
+  font-size: 1rem;
+  max-width: 38rem;
+}
+
+/* Fingers: the switch and Copy get 44px-tall targets. */
+@media (pointer: coarse), (max-width: 34rem) {
+  .styles span {
+    padding: .6rem .8rem;
+  }
+  button {
+    min-height: 2.75rem;
+  }
+}
+
+/* Below this the Deseret bar cannot hold label, switch and Copy on one line, so the boxes stack. */
+@media (max-width: 62rem) {
+  .boxes {
+    grid-template-columns: 1fr;
+  }
+  .box + .box {
+    border-left: 0;
+    border-top: 1.5px solid var(--ink);
+  }
+  textarea,
+  #out {
+    min-height: 9.5rem;
+  }
+}
+
+/* Phone: label and Copy share a line, the switch takes the full line under them. */
+@media (max-width: 34rem) {
+  main {
+    padding: 0 1rem 3.5rem;
+  }
+  header {
+    padding: 2.25rem 0 .5rem;
+  }
+  h1 .d {
+    font-size: clamp(1.7rem, 9.4vw, 3rem);
+  }
+  h1 .said {
+    font-size: 1.2rem;
+  }
+  h2 {
+    font-size: 1.7rem;
+    margin-top: 2.75rem;
+  }
+  h3 {
+    margin-top: 1.75rem;
+  }
+  footer {
+    margin-top: 2.75rem;
+  }
+  .box > .label {
+    padding: .6rem .75rem .75rem;
+  }
+  #copy {
+    margin-left: auto;
+  }
+  .styles {
+    order: 1;
+    flex: 1 0 100%;
+    display: flex;
+    margin: 0;
+  }
+  .styles span {
+    padding-inline: .3rem;
+  }
+  textarea,
+  #out {
+    padding: .85rem 1rem;
+  }
+  .group,
+  .pairs,
+  .practice {
+    gap: .5rem;
+  }
+  .group,
+  .practice {
+    grid-template-columns: 1fr 1fr;
+  }
+  .pairs {
+    grid-template-columns: 1fr;
+  }
+  .keyrow,
+  .keys {
+    gap: .2rem;
+  }
+  .key button {
+    font-size: 1.25rem;
+  }
+  .key small {
+    display: none;
+  }
+  .letter {
+    padding: .55rem .7rem .6rem;
+  }
+  .letter .glyph {
+    font-size: 2.3rem;
+  }
+  .practice summary {
+    font-size: 1.45rem;
+    padding: .7rem .8rem;
+  }
+  .practice p {
+    padding: .5rem .8rem .7rem;
+  }
+}
