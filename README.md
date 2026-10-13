@@ -4,8 +4,9 @@ Writes English in other alphabets. The first one is the
 [Deseret alphabet](https://en.wikipedia.org/wiki/Deseret_alphabet), a phonetic
 alphabet for English made in Utah in the 1850s.
 
-The site teaches the letters and has a side-by-side translator:
-https://jakeave.github.io/dualwrit/
+The site is a landing page and one folder per script. Deseret's page teaches the
+letters and has a side-by-side translator:
+https://jakeave.github.io/dualwrit/deseret/
 
 ## How it works
 
@@ -62,8 +63,10 @@ src/deseret.ts       letter tables, styles, suffix rules, transcribe()
 src/heteronyms.ts    two-reading words: readings and context rules
 src/*_test.ts        tests
 cli.ts               command line
-web/                 the site: landing page, site.css, app.ts (bundled for the browser)
-web/deseret/         the Deseret page and its share image
+web/                 the site: landing page, site.css, the shared shell app.ts
+                     (mount(script)), and script.ts (the Script and Engine types)
+web/deseret/         Deseret: script.ts (its definition), main.ts (bundle entry),
+                     index.html and its share image
 data/cmudict.dict    pronouncing dictionary
 scripts/score.ts     agreement with the 1869 text (needs corpus/, see below)
 samples/             chapters of three public-domain books in Deseret
@@ -84,6 +87,11 @@ icon is scaled down with `sips`. Re-render them if the palette or title changes.
 Pushing to `main` runs the checks and tests, builds, and publishes `dist/` to
 GitHub Pages (`.github/workflows/pages.yml`). The transcriber runs in the
 browser, so the site is fully static.
+
+To add a script, give it a folder under `web/` with a `Script` definition, a
+`main.ts` that calls `mount`, and a page, then add a bundle command for it to
+`build` in `deno.json`. `build` bundles `web/deseret/main.ts` to
+`dist/deseret/app.js`.
 
 ## The 1869 score
 
