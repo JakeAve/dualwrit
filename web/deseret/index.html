@@ -46,45 +46,7 @@
       There are no silent letters and no spelling rules to memorize: if you can say a word, you can write it.</p>
       </header>
 
-      <section aria-labelledby="try">
-        <h2 id="try">Write something</h2>
-        <p
-          class="lede">Type in either box and the other follows. Choose a spelling style on the right.</p>
-
-        <div class="boxes">
-          <div class="box">
-            <label for="in">English</label>
-            <textarea id="in"
-              spellcheck="true">To be or not to be, that is the question. Which of you knows the way to the people of the valley?</textarea>
-          </div>
-          <div class="box">
-            <div class="label">
-              <span id="out-label">Deseret</span>
-              <fieldset class="styles">
-                <legend class="sr-only">Spelling style</legend>
-                <label><input type="radio" name="style" value="modern" checked><span>Modern</span></label>
-                <label><input type="radio" name="style" value="abbreviated"><span>Abbreviated</span></label>
-                <label><input type="radio" name="style" value="1869"><span>1869</span></label>
-              </fieldset>
-              <button type="button" id="copy">Copy</button>
-            </div>
-            <div id="out" lang="en-Dsrt" contenteditable="plaintext-only"
-              role="textbox" aria-multiline="true" aria-labelledby="out-label"
-              spellcheck="false"></div>
-          </div>
-        </div>
-        <p id="style-note" aria-live="polite"></p>
-        <p id="choice-note"
-          hidden>Underlined words can be said two ways. Press one to switch it.
-      Your choice is written into the English as a tag, like <code>read{past}</code>; a dotted underline is a guess.</p>
-        <p id="misses" aria-live="polite"></p>
-
-        <div id="keys">
-          <p>Use your keyboard to type Deseret letters, hold (Alt/Option) for
-        alternate letters</p>
-          <div id="keymap"></div>
-        </div>
-      </section>
+      <section data-mount="translator"></section>
 
       <section aria-labelledby="letters">
         <h2 id="letters">The letters</h2>
@@ -125,25 +87,7 @@
           data-words="cat|sun|ship|moon|bread|honey|light|school|thing|mountain"></ul>
       </section>
 
-      <section aria-labelledby="practice">
-        <h2 id="practice">Practice</h2>
-        <p class="lede">Spell one word at a time. The boxes are the sounds whose
-      letters you have met: type the Deseret letter for each. The rest of the
-      word stays in Latin until its letters arrive, a new one each time you
-      have the hang of the last.</p>
-        <div id="drill">
-          <p id="d-note" aria-live="polite"></p>
-          <div id="d-word" tabindex="0" role="group"></div>
-          <p id="d-hint" aria-live="polite"></p>
-          <div id="d-keys"></div>
-          <p><button type="button" id="d-next" hidden>Next word</button></p>
-          <div id="d-progress">
-            <div id="d-strip" lang="en-Dsrt" aria-label="Letters learned"></div>
-            <button type="button" id="d-skip">Skip ahead</button>
-            <button type="button" id="d-reset">Start over</button>
-          </div>
-        </div>
-      </section>
+      <section data-mount="drill"></section>
 
       <footer>
     Pronunciations come from the CMU Pronouncing Dictionary, which is American English.

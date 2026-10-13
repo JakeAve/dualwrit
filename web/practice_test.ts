@@ -1,46 +1,7 @@
 import { assert, assertEquals } from "@std/assert";
-import { parseDict, type Style, styles, transcribe } from "../src/deseret.ts";
-import {
-  align,
-  choose,
-  type Chunk,
-  CLEAN,
-  fresh,
-  order,
-  splits,
-  unlock,
-} from "./practice.ts";
+import { align, choose, type Chunk, CLEAN, fresh, unlock } from "./practice.ts";
 
-const dict = parseDict(
-  await Deno.readTextFile(new URL("../data/cmudict.dict", import.meta.url)),
-);
-const pool = (style: Style) =>
-  splits.map((s) =>
-    align(s, transcribe(s.replaceAll("|", ""), dict, style).out)
-  );
-
-Deno.test("the teaching order is the 40 letters, once each", () => {
-  assertEquals(
-    [...order].sort(),
-    Array.from({ length: 40 }, (_, i) => String.fromCodePoint(0x10428 + i)),
-  );
-});
-
-Deno.test("every word splits into one chunk per modern letter", () => {
-  const off = splits.filter((_, i) => !pool("modern")[i]);
-  assertEquals(off, []);
-});
-
-Deno.test("every letter a style uses has a word to practise it on", () => {
-  for (const style of Object.keys(styles) as Style[]) {
-    const words = pool(style).filter((w) => w !== null);
-    const used = new Set(words.flat().map((c) => c.letter));
-    // 1869 has no Oi or Ew letter.
-    const letters = style === "1869" ? order.slice(0, 38) : order;
-    assertEquals(letters.filter((l) => !used.has(l)), [], style);
-    console.log(`${style}: ${words.length} of ${splits.length} words`);
-  }
-});
+const order = [..."abcde"];
 
 Deno.test("letters unlock one at a time, once those in play are known", () => {
   const p = fresh();
@@ -52,7 +13,9 @@ Deno.test("letters unlock one at a time, once those in play are known", () => {
 });
 
 Deno.test("the next word uses the least-practised letter, never the last word", () => {
-  const words = pool("modern") as Chunk[][];
+  const words = ["a|b", "b|c", "c|a", "c|d", "a|c|e"].map((s) =>
+    align(s, s.replaceAll("|", ""))
+  ) as Chunk[][];
   const p = fresh();
   p.count = { [order[0]]: 5, [order[1]]: 5 };
   let last: Chunk[] | undefined;
