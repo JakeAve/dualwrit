@@ -85,9 +85,9 @@ alternate letters</p>
   practising.setAttribute("aria-labelledby", "practice");
   practising.innerHTML = `
 <h2 id="practice">Practice</h2>
-<p class="lede">Spell one word at a time. The boxes are the sounds whose
-letters you have met: type the ${script.name} letter for each. The rest of the
-word stays in Latin until its letters arrive, a new one each time you
+<p class="lede">Spell one word at a time. The boxes are the parts of
+the word whose letters you have met: type the ${script.name} letter for each.
+The rest of the word stays in Latin until its letters arrive, a new one each time you
 have the hang of the last.</p>
 <div id="drill">
 <p id="d-note" aria-live="polite"></p>
