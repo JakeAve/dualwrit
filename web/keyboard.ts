@@ -90,7 +90,7 @@ export function keyboard(
           row.map(([latin, plain, alt]) =>
             `<div class="key">${
               alt ? button(alt, true, latin) : "<span></span>"
-            }${button(plain, false, latin)}</div>`
+            }${plain ? button(plain, false, latin) : "<span></span>"}</div>`
           ).join("")
         }</div>`
       ).join("") +

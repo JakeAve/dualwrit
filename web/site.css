@@ -443,7 +443,7 @@ button:active {
 .keys.shift [data-act="shift"] {
   background: var(--honey);
 }
-/* Touch screens: the phone's keyboard is held down in a Deseret box, so
+/* Touch screens: the phone's keyboard is held down in the script's box, so
    this one takes its place at the bottom of the screen. */
 @media (pointer: coarse) {
   .keyrow.touch {
@@ -598,7 +598,7 @@ footer {
   }
 }
 
-/* Below this the Deseret bar cannot hold label, switch and Copy on one line, so the boxes stack. */
+/* Below this the script's bar cannot hold label, switch and Copy on one line, so the boxes stack. */
 @media (max-width: 62rem) {
   .boxes {
     grid-template-columns: 1fr;
