@@ -9,6 +9,9 @@ corpus/
 # Working screenshots
 samples/screenshots/
 
+# Specs and plans
+docs/
+
 # Agent scratch dirs
 .superpowers/
 .playwright-mcp/
